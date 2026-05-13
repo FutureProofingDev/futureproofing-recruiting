@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Futureproofing · Recruiting Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #f6f6fb;
+      --surface:   #ffffff;
+      --border:    #e3e3ef;
+      --border-s:  #c8c8de;
+      --text:      #0d0d18;
+      --text2:     #565678;
+      --text3:     #9898b8;
+      --purple:    #5B5BD6;
+      --purple-d:  #4747c0;
+      --purple-l:  #7878e0;
+      --p-pale:    #eaeaff;
+      --p-faint:   #f4f4ff;
+      --green:     #0a9971;
+      --g-bg:      #eafaf5;
+      --g-border:  #a3e9d4;
+      --amber:     #b06c00;
+      --a-bg:      #fef8ec;
+      --a-border:  #f9d98a;
+      --red:       #d63232;
+      --r-bg:      #fdf2f2;
+      --r-border:  #f5a5a5;
+      --blue:      #2563eb;
+      --b-bg:      #eff6ff;
+      --b-border:  #bfdbfe;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px; line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── FP Mark ─────────────────────────────────────────────────────── */
+    .fp-mark {
+      width: 34px; height: 34px;
+      background: var(--purple); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-style: italic; font-weight: 800; font-size: 14px;
+      color: #fff; flex-shrink: 0; letter-spacing: -0.5px;
+    }
+    .fp-mark.sm { width: 28px; height: 28px; font-size: 11px; border-radius: 6px; }
+
+    /* ─── Landing ─────────────────────────────────────────────────────── */
+    .landing-page {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      background: var(--surface);
+    }
+    .lp-header {
+      padding: 22px 32px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .lp-brand-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .lp-body {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 48px 24px 80px;
+    }
+    .lp-content { max-width: 520px; width: 100%; }
+    .lp-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 1.2px;
+      text-transform: uppercase; color: var(--purple);
+      display: flex; align-items: center; gap: 6px; margin-bottom: 16px;
+    }
+    .lp-eyebrow::before {
+      content: ''; width: 4px; height: 4px;
+      background: var(--purple); border-radius: 50%;
+    }
+    .lp-title {
+      font-size: 40px; font-weight: 800; line-height: 1.12;
+      letter-spacing: -1.2px; color: var(--text); margin-bottom: 16px;
+    }
+    .lp-sub {
+      font-size: 15px; color: var(--text2); line-height: 1.65;
+      margin-bottom: 32px; max-width: 420px;
+    }
+    .lp-features {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px;
+    }
+    .lp-feature {
+      font-size: 11px; font-weight: 500; color: var(--text2);
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px;
+    }
+    .lp-context-wrap { margin-bottom: 20px; }
+    .lp-context-toggle {
+      background: none; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      color: var(--purple); font-weight: 500; padding: 0;
+      display: flex; align-items: center; gap: 4px; margin-bottom: 0;
+    }
+    .lp-context-toggle:hover { color: var(--purple-d); }
+    .lp-ctx-hint { color: var(--text3); font-weight: 400; }
+    .lp-context-area {
+      margin-top: 10px; width: 100%; min-height: 88px; resize: vertical;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 11px 14px;
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      color: var(--text); line-height: 1.6; outline: none;
+      transition: border-color .15s;
+    }
+    .lp-context-area:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(91,91,214,.1); }
+    .lp-context-area::placeholder { color: var(--text3); }
+    .lp-btn {
+      width: 100%; padding: 14px 24px; border: none; border-radius: 8px;
+      background: var(--purple); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 8px; letter-spacing: -0.1px;
+      transition: background .15s, transform .1s;
+    }
+    .lp-btn:hover:not(:disabled) { background: var(--purple-d); }
+    .lp-btn:active:not(:disabled) { transform: scale(0.99); }
+    .lp-btn:disabled { opacity: .55; cursor: not-allowed; }
+    .lp-btn-arrow { font-size: 16px; }
+    .lp-loading {
+      margin-top: 18px; display: flex; align-items: center; gap: 10px;
+      color: var(--text2); font-size: 13px;
+    }
+    .lp-spinner {
+      width: 14px; height: 14px; flex-shrink: 0;
+      border: 2px solid var(--border); border-top-color: var(--purple);
+      border-radius: 50%; animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .lp-error {
+      margin-top: 12px; padding: 12px 16px;
+      background: var(--r-bg); border: 1px solid var(--r-border);
+      border-radius: 8px; font-size: 13px; color: var(--red);
+    }
+
+    /* ─── Dashboard ───────────────────────────────────────────────────── */
+    .dash-page { min-height: 100vh; }
+
+    .dash-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 28px; gap: 12px;
+    }
+    .dh-left { display: flex; align-items: center; gap: 12px; }
+    .dh-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .dh-sub   { font-size: 11px; color: var(--text3); }
+    .dh-right { display: flex; align-items: center; gap: 12px; }
+    .dh-ts    { font-size: 11px; color: var(--text3); }
+    .dh-refresh {
+      background: none; border: 1px solid var(--border); border-radius: 6px;
+      padding: 5px 12px; font-family: 'Inter', sans-serif; font-size: 12px;
+      font-weight: 500; color: var(--text2); cursor: pointer;
+      transition: all .15s;
+    }
+    .dh-refresh:hover { border-color: var(--purple); color: var(--purple); }
+
+    .dash-content { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+    .dash-footer {
+      max-width: 1100px; margin: 0 auto; padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--text3);
+    }
+
+    /* ─── Sections ────────────────────────────────────────────────────── */
+    .sec {
+      margin-top: 32px; padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .sec:first-child { margin-top: 24px; padding-top: 24px; border-top: none; }
+
+    .sec-eyebrow {
+      font-size: 10px; font-weight: 600; letter-spacing: 1.4px;
+      text-transform: uppercase; color: var(--purple);
+      display: flex; align-items: center; gap: 6px; margin-bottom: 5px;
+    }
+    .sec-eyebrow::before {
+      content: ''; width: 3px; height: 3px;
+      background: var(--purple); border-radius: 50%;
+    }
+    .sec-title {
+      font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
+      color: var(--text); margin-bottom: 4px;
+    }
+    .sec-desc {
+      font-size: 13px; color: var(--text2); margin-bottom: 20px; max-width: 600px;
+    }
+
+    /* ─── Context Gap Panel ───────────────────────────────────────────── */
+    .gap-panel {
+      margin: 20px 24px 0; padding: 18px 20px;
+      background: var(--p-faint); border: 1px solid var(--p-pale);
+      border-radius: 10px; max-width: 1100px; margin-left: auto; margin-right: auto;
+    }
+    .gap-header {
+      display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px;
+    }
+    .gap-icon { color: var(--purple); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .gap-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .gap-sub   { font-size: 12px; color: var(--text2); }
+    .gap-questions {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px; margin-bottom: 14px;
+    }
+    .gap-q { display: flex; flex-direction: column; gap: 4px; }
+    .gap-q-label { font-size: 12px; font-weight: 600; color: var(--text); }
+    .gap-q-input {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: 7px 11px;
+      font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text);
+      outline: none; transition: border-color .15s; width: 100%;
+    }
+    .gap-q-input:focus { border-color: var(--purple); box-shadow: 0 0 0 2px rgba(91,91,214,.1); }
+    .gap-btn {
+      background: var(--purple); color: #fff; border: none; border-radius: 6px;
+      padding: 8px 18px; font-family: 'Inter', sans-serif; font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: background .15s;
+    }
+    .gap-btn:hover { background: var(--purple-d); }
+
+    /* ─── Signal Cards (Command Center) ──────────────────────────────── */
+    .signal-row {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 10px; margin-bottom: 14px;
+    }
+    .signal-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+      transition: box-shadow .15s; position: relative; overflow: hidden;
+    }
+    .signal-card:hover { box-shadow: 0 2px 12px rgba(91,91,214,.08); }
+    .signal-card.alert-card { border-color: var(--r-border); background: var(--r-bg); }
+    .signal-card.warn-card  { border-color: var(--a-border); background: var(--a-bg); }
+    .signal-card.good-card  { border-color: var(--g-border); background: var(--g-bg); }
+
+    .sc-lbl {
+      font-size: 10px; font-weight: 600; letter-spacing: .9px;
+      text-transform: uppercase; color: var(--text3); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .sc-val {
+      font-size: 30px; font-weight: 800; color: var(--text);
+      line-height: 1; letter-spacing: -1px; margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+    .sc-val.alert { color: var(--red); }
+    .sc-val.warn  { color: var(--amber); }
+    .sc-val.good  { color: var(--green); }
+    .sc-val.muted { font-size: 20px; letter-spacing: -0.5px; }
+    .sc-sub { font-size: 11px; color: var(--text2); line-height: 1.5; }
+    .sc-sub strong { font-weight: 600; }
+
+    .sc-prog { height: 3px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+    .sc-prog-fill { height: 100%; border-radius: 2px; transition: width .8s ease; }
+
+    /* Status dot */
+    .sdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .sdot.ok     { background: var(--green); }
+    .sdot.warn   { background: var(--amber); }
+    .sdot.alert  { background: var(--red); box-shadow: 0 0 0 2px rgba(214,50,50,.2); }
+    .sdot.pulse  { animation: pulse-dot 1.5s infinite; }
+    @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+    /* Pipeline pulse row */
+    .pulse-row {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+    }
+    .pulse-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 14px;
+    }
+    .pt-lbl { font-size: 10px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--text3); margin-bottom: 5px; }
+    .pt-val { font-size: 22px; font-weight: 700; letter-spacing: -0.6px; font-variant-numeric: tabular-nums; }
+
+    /* Critical Signal Banner */
+    .crit-banner {
+      background: var(--r-bg); border: 1px solid var(--r-border);
+      border-radius: 8px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+      font-size: 13px; color: var(--red);
+    }
+    .warn-banner {
+      background: var(--a-bg); border: 1px solid var(--a-border);
+      border-radius: 8px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+      font-size: 13px; color: var(--amber);
+    }
+
+    /* ─── Funnel ──────────────────────────────────────────────────────── */
+    .funnel-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+    .funnel-row {
+      display: grid; grid-template-columns: 200px 1fr 70px 70px 100px 28px;
+      align-items: center; gap: 12px; padding: 11px 18px;
+      border-bottom: 1px solid var(--border);
+      transition: background .1s;
+    }
+    .funnel-row:last-child { border-bottom: none; }
+    .funnel-row:hover { background: var(--p-faint); }
+    .funnel-row.bottleneck-row { background: var(--r-bg) !important; border-left: 3px solid var(--red); padding-left: 15px; }
+    .funnel-row.warn-row { background: var(--a-bg) !important; border-left: 3px solid var(--amber); padding-left: 15px; }
+
+    .f-stage { font-size: 13px; font-weight: 500; color: var(--text); }
+    .f-track { height: 7px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .f-fill  { height: 100%; border-radius: 4px; transition: width .6s ease; }
+    .f-active { font-size: 13px; font-weight: 600; color: var(--purple); text-align: right; font-variant-numeric: tabular-nums; }
+    .f-n    { font-size: 12px; color: var(--text3); text-align: right; font-variant-numeric: tabular-nums; }
+    .f-rate { font-size: 12px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+
+    .f-flag {
+      font-size: 11px; font-weight: 600; text-align: center;
+    }
+    .f-insight {
+      grid-column: 1 / -1; font-size: 12px; color: var(--text2);
+      padding: 6px 0 8px; line-height: 1.5; display: none;
+    }
+    .funnel-row:hover .f-insight { display: block; }
+
+    .funnel-header {
+      display: grid; grid-template-columns: 200px 1fr 70px 70px 100px 28px;
+      gap: 12px; padding: 8px 18px;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      font-size: 10px; font-weight: 600; letter-spacing: .8px;
+      text-transform: uppercase; color: var(--text3);
+    }
+
+    /* Bottleneck callout */
+    .bottleneck-callout {
+      background: var(--r-bg); border: 1px solid var(--r-border);
+      border-radius: 8px; padding: 14px 18px; margin-bottom: 14px;
+      display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: flex-start;
+    }
+    .bc-icon { font-size: 20px; }
+    .bc-title { font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 3px; }
+    .bc-text  { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+    /* ─── Channel Table ───────────────────────────────────────────────── */
+    .channel-table {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden; margin-bottom: 14px;
+    }
+    .ct-header {
+      display: grid; grid-template-columns: 1fr 70px 64px 80px 80px 100px;
+      gap: 10px; padding: 9px 18px;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      font-size: 10px; font-weight: 600; letter-spacing: .8px;
+      text-transform: uppercase; color: var(--text3);
+    }
+    .ct-row {
+      display: grid; grid-template-columns: 1fr 70px 64px 80px 80px 100px;
+      gap: 10px; padding: 11px 18px;
+      border-bottom: 1px solid var(--border);
+      align-items: center; transition: background .1s;
+    }
+    .ct-row:last-child { border-bottom: none; }
+    .ct-row:hover { background: var(--p-faint); }
+    .ct-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .ct-n    { font-size: 12px; color: var(--text2); font-variant-numeric: tabular-nums; }
+    .ct-rate { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    /* ─── Economics ───────────────────────────────────────────────────── */
+    .econ-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 14px;
+    }
+    .econ-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+    }
+    .ec-label { font-size: 10px; font-weight: 600; letter-spacing: .9px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+    .ec-val   { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .ec-val.alert { color: var(--red); }
+    .ec-val.warn  { color: var(--amber); }
+    .ec-desc  { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+    .econ-insight {
+      background: var(--p-faint); border: 1px solid var(--p-pale);
+      border-radius: 8px; padding: 14px 18px; margin-top: 4px;
+      font-size: 13px; color: var(--text); line-height: 1.7;
+    }
+    .ei-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .8px;
+      text-transform: uppercase; color: var(--purple); margin-bottom: 6px;
+    }
+
+    /* ─── Forecast ────────────────────────────────────────────────────── */
+    .forecast-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;
+    }
+    @media (max-width: 640px) { .forecast-row { grid-template-columns: 1fr; } }
+    .forecast-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 18px 20px;
+    }
+    .fc-label { font-size: 10px; font-weight: 600; letter-spacing: .9px; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+    .fc-big   { font-size: 32px; font-weight: 800; letter-spacing: -1px; line-height: 1; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+    .fc-sub   { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+    .scenario-stack { display: flex; flex-direction: column; gap: 8px; }
+    .scenario-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface);
+    }
+    .scen-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .scen-dot.r { background: var(--red); }
+    .scen-dot.a { background: var(--amber); }
+    .scen-dot.g { background: var(--green); }
+    .scen-label { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+    .scen-val   { font-size: 13px; color: var(--text2); }
+    .scen-badge {
+      font-size: 10px; font-weight: 600; padding: 2px 8px;
+      border-radius: 12px; text-transform: uppercase; letter-spacing: .3px; flex-shrink: 0;
+    }
+
+    /* ─── Simulation Lab ──────────────────────────────────────────────── */
+    .sim-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;
+    }
+    .sim-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+    .sim-top {
+      padding: 16px 18px; display: flex; align-items: flex-start; gap: 12px;
+      cursor: pointer; transition: background .1s;
+    }
+    .sim-top:hover { background: var(--p-faint); }
+    .sim-icon { font-size: 20px; flex-shrink: 0; }
+    .sim-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .sim-assumption { font-size: 12px; color: var(--text2); }
+    .sim-verdict {
+      font-size: 10px; font-weight: 700; letter-spacing: .4px;
+      text-transform: uppercase; padding: 3px 10px;
+      border-radius: 12px; margin-left: auto; flex-shrink: 0;
+    }
+    .sim-verdict.high { background: var(--g-bg); color: var(--green); border: 1px solid var(--g-border); }
+    .sim-verdict.medium { background: var(--a-bg); color: var(--amber); border: 1px solid var(--a-border); }
+    .sim-verdict.low { background: var(--r-bg); color: var(--red); border: 1px solid var(--r-border); }
+
+    .sim-body {
+      border-top: 1px solid var(--border); padding: 14px 18px;
+      display: none;
+    }
+    .sim-card.open .sim-body { display: block; }
+    .sim-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; font-size: 13px; }
+    .sim-row-label { color: var(--text2); }
+    .sim-row-val   { font-weight: 600; color: var(--text); text-align: right; max-width: 55%; }
+    .sim-constraint {
+      margin-top: 10px; padding: 10px 13px;
+      background: var(--p-faint); border-radius: 6px;
+      font-size: 12px; color: var(--text); line-height: 1.6;
+    }
+    .sim-constraint-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .5px;
+      text-transform: uppercase; color: var(--purple); margin-bottom: 3px;
+    }
+
+    /* ─── Recommendations ─────────────────────────────────────────────── */
+    .rec-group { margin-bottom: 20px; }
+    .rec-group-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+      text-transform: uppercase; padding: 6px 12px;
+      border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;
+      margin-bottom: 10px;
+    }
+    .rgl-p0 { background: var(--r-bg); color: var(--red); border: 1px solid var(--r-border); }
+    .rgl-p1 { background: var(--a-bg); color: var(--amber); border: 1px solid var(--a-border); }
+    .rgl-p2 { background: var(--p-pale); color: var(--purple); border: 1px solid #c8c8f8; }
+
+    .rec-stack { display: flex; flex-direction: column; gap: 8px; }
+    .rec-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 20px;
+    }
+    .rec-card.p0 { border-left: 3px solid var(--red); }
+    .rec-card.p1 { border-left: 3px solid var(--amber); }
+    .rec-card.p2 { border-left: 3px solid var(--purple); }
+
+    .rec-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 8px;
+    }
+    .rec-title { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.4; }
+    .rec-tags  { display: flex; gap: 5px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+    .rec-tag {
+      font-size: 10px; font-weight: 600; padding: 2px 8px;
+      border-radius: 12px; text-transform: uppercase; letter-spacing: .3px;
+      border: 1px solid var(--border); color: var(--text2); background: var(--bg);
+      white-space: nowrap;
+    }
+    .rec-tag.urgent { background: var(--r-bg); color: var(--red); border-color: var(--r-border); }
+    .rec-tag.high-impact { background: var(--g-bg); color: var(--green); border-color: var(--g-border); }
+
+    .rec-rationale { font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 8px; }
+    .rec-metrics {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .rec-metric { font-size: 12px; color: var(--text2); }
+    .rec-metric strong { color: var(--text); font-weight: 600; }
+
+    /* ─── Badge ───────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      letter-spacing: .4px; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+    }
+    .badge-ok     { background: var(--g-bg);   color: var(--green);  border: 1px solid var(--g-border); }
+    .badge-warn   { background: var(--a-bg);   color: var(--amber);  border: 1px solid var(--a-border); }
+    .badge-alert  { background: var(--r-bg);   color: var(--red);    border: 1px solid var(--r-border); }
+    .badge-purple { background: var(--p-pale); color: var(--purple); border: 1px solid #c8c8f8; }
+    .badge-info   { background: var(--b-bg);   color: var(--blue);   border: 1px solid var(--b-border); }
+
+    /* ─── Health gauge ────────────────────────────────────────────────── */
+    .health-score-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px 22px;
+      display: flex; align-items: center; gap: 20px;
+    }
+    .hs-circle {
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; position: relative;
+    }
+    .hs-circle svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+    .hs-num {
+      font-size: 22px; font-weight: 800; letter-spacing: -1px;
+      position: relative; z-index: 1;
+    }
+    .hs-info { flex: 1; min-width: 0; }
+    .hs-grade {
+      font-size: 16px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 3px;
+    }
+    .hs-components { font-size: 11px; color: var(--text2); line-height: 1.8; }
+
+    /* ─── Two-col layout ──────────────────────────────────────────────── */
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;
+    }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ─── Insight note ────────────────────────────────────────────────── */
+    .insight-note {
+      padding: 11px 15px; border-radius: 8px;
+      font-size: 13px; line-height: 1.65; margin-top: 8px;
+    }
+    .insight-note.green  { background: var(--g-bg);   color: var(--text); border: 1px solid var(--g-border); }
+    .insight-note.amber  { background: var(--a-bg);   color: var(--text); border: 1px solid var(--a-border); }
+    .insight-note.red    { background: var(--r-bg);   color: var(--text); border: 1px solid var(--r-border); }
+    .insight-note.purple { background: var(--p-faint); color: var(--text); border: 1px solid var(--p-pale); }
+    .in-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .6px;
+      text-transform: uppercase; margin-bottom: 3px;
+    }
+    .insight-note.green  .in-label { color: var(--green); }
+    .insight-note.amber  .in-label { color: var(--amber); }
+    .insight-note.red    .in-label { color: var(--red); }
+    .insight-note.purple .in-label { color: var(--purple); }
+
+    @media (max-width: 580px) {
+      .funnel-row    { grid-template-columns: 1fr 56px 56px 72px 24px; }
+      .f-track       { display: none; }
+      .funnel-header { grid-template-columns: 1fr 56px 56px 72px 24px; }
+      .ct-header, .ct-row { grid-template-columns: 1fr 64px 64px 80px; }
+      .ct-header > :nth-child(5), .ct-row > :nth-child(5),
+      .ct-header > :nth-child(6), .ct-row > :nth-child(6) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- LANDING                                                               -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="landingPage" class="landing-page">
+  <div class="lp-header">
+    <div class="fp-mark">FP</div>
+    <div class="lp-brand-name">Futureproofing</div>
+  </div>
+  <div class="lp-body">
+    <div class="lp-content">
+      <div class="lp-eyebrow">AI Engineer Recruiting · Live Intelligence</div>
+      <h1 class="lp-title">Recruiting Intelligence<br>for Growth Teams</h1>
+      <p class="lp-sub">Stop reading charts. Start making decisions. Diagnose bottlenecks, forecast outcomes, and optimize every dollar in your AI Engineer pipeline.</p>
+      <div class="lp-features">
+        <span class="lp-feature">Funnel Diagnosis</span>
+        <span class="lp-feature">Hiring Economics</span>
+        <span class="lp-feature">What-If Simulations</span>
+        <span class="lp-feature">Forecast Engine</span>
+        <span class="lp-feature">Strategic Recommendations</span>
+      </div>
+      <div class="lp-context-wrap">
+        <button class="lp-context-toggle" onclick="toggleLpContext()">
+          + Add context to sharpen analysis <span class="lp-ctx-hint">(optional but recommended)</span>
+        </button>
+        <textarea class="lp-context-area" id="lpCtx" style="display:none" placeholder="Paste LinkedIn Ads data, recruiter notes, urgency signals, budget constraints, team context...&#10;&#10;e.g. LinkedIn Ads: $4,200/mo, 312 clicks, 48 applications. Referral program launched 2 weeks ago. 2 recruiters on this pipeline. Product launch Q3 depends on 3 AI hires. Urgency: critical."></textarea>
+      </div>
+      <button class="lp-btn" id="lpBtn" onclick="startAnalysis()">
+        Run Intelligence Report <span class="lp-btn-arrow">→</span>
+      </button>
+      <div class="lp-loading" id="lpLoading" style="display:none">
+        <div class="lp-spinner"></div>
+        <span id="lpStatus">Connecting to Ashby...</span>
+      </div>
+      <div class="lp-error" id="lpError" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- DASHBOARD                                                             -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="dashPage" class="dash-page" style="display:none">
+  <div class="dash-header">
+    <div class="dh-left">
+      <div class="fp-mark sm">FP</div>
+      <div>
+        <div class="dh-title">AI Engineer Recruiting Intelligence</div>
+        <div class="dh-sub" id="dhSub">Futureproofing · Ashby ATS · Live</div>
+      </div>
+    </div>
+    <div class="dh-right">
+      <div class="dh-ts" id="dhTs"></div>
+      <button class="dh-refresh" id="dhRefresh" onclick="startAnalysis()">↺ Refresh</button>
+    </div>
+  </div>
+
+  <!-- Context gap questions (shown if context is sparse) -->
+  <div id="contextGapPanel" style="display:none; padding: 0 24px; max-width: 1148px; margin: 16px auto 0;">
+    <div class="gap-panel">
+      <div class="gap-header">
+        <div class="gap-icon">◈</div>
+        <div>
+          <div class="gap-title">Sharpen Your Analysis</div>
+          <div class="gap-sub">These answers materially improve forecast accuracy and recommendation precision</div>
+        </div>
+      </div>
+      <div class="gap-questions" id="gapQuestions"></div>
+      <button class="gap-btn" onclick="applyGapAnswers()">Update Analysis →</button>
+    </div>
+  </div>
+
+  <div class="dash-content" id="dashContent"></div>
+
+  <footer class="dash-footer">
+    <span>Futureproofing · AI Engineer Recruiting Intelligence · Powered by Ashby ATS</span>
+    <span id="footerTs"></span>
+  </footer>
+</div>
+
+<script>
+const API_URL        = '/api/report';
+const TARGET         = 18;
+const DEADLINE       = '2026-06-29';
+const BASE_VELOCITY  = 1.5; // target hires/week
+const REVENUE_PER_ENG = 30000; // annual revenue contribution per AI engineer
+
+const BENCH = {
+  overallConversion:  { good: .05, warn: .02 },
+  shortlistPass:      { good: .25, warn: .12 },
+  interview1Pass:     { good: .40, warn: .25 },
+  techPass:           { good: .40, warn: .20 },
+  gobPass:            { good: .45, warn: .28 },
+  referralShare:      { good: .30, warn: .12 },
+};
+
+// ─── Utilities ────────────────────────────────────────────────────────────
+const pct   = v => (v * 100).toFixed(1) + '%';
+const num   = v => (v || 0).toLocaleString();
+const $     = id  => document.getElementById(id);
+const daysTo = d => Math.max(0, Math.ceil((new Date(d) - Date.now()) / 86400000));
+const esc   = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function formatTs(iso) {
+  return new Date(iso).toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function rateColor(v, b) {
+  if (!b) return 'var(--text2)';
+  return v >= b.good ? 'var(--green)' : v >= b.warn ? 'var(--amber)' : 'var(--red)';
+}
+function rateClass(v, b) {
+  if (!b) return '';
+  return v >= b.good ? 'ok' : v >= b.warn ? 'warn' : 'alert';
+}
+function badgeForRate(v, b) {
+  if (!b) return `<span class="badge badge-purple">No data</span>`;
+  const c = v >= b.good ? 'badge-ok' : v >= b.warn ? 'badge-warn' : 'badge-alert';
+  const l = v >= b.good ? '✓ OK' : v >= b.warn ? '⚠ Watch' : '✗ Critical';
+  return `<span class="badge ${c}">${l}</span>`;
+}
+
+// ─── Context Parser ────────────────────────────────────────────────────────
+function parseCtx(ctx) {
+  const cl = (ctx || '').toLowerCase();
+  const m = s => cl.includes(s);
+  const rex = (re, g = 1) => { const r = ctx?.match(re); return r ? r[g] : null; };
+
+  const spendRaw  = rex(/\$?([\d,]+)\s*(spent|spend|per month|\/mo|month|budget)/i);
+  const clickRaw  = rex(/([\d,]+)\s*clicks/i);
+  const appRaw    = rex(/([\d,]+)\s*appl/i);
+  const recRaw    = rex(/([\d]+)\s*recruiters?/i);
+  const spend  = spendRaw  ? parseFloat(spendRaw.replace(/,/g,''))  : null;
+  const clicks = clickRaw  ? parseInt(clickRaw.replace(/,/g,''))     : null;
+  const liApps = appRaw    ? parseInt(appRaw.replace(/,/g,''))       : null;
+  const recruiters = recRaw ? parseInt(recRaw) : null;
+
+  return {
+    hasLinkedIn:   m('linkedin') && (spend || m('cpc') || m('impression') || m('click')),
+    liSpend: spend, liClicks: clicks, liApps,
+    liCpc:   spend && clicks ? spend/clicks   : null,
+    liCpa:   spend && liApps ? spend/liApps   : null,
+    recruiters,
+    isUrgent:      m('urgent') || m('critical') || m('blocker') || m('q3') || m('q2') || m('launch'),
+    hasReferral:   m('referral'),
+    referralActive: m('referral') && /already|running|active|launched|started|program/.test(cl),
+    gobActive:      /get on board|getonboard|gob/.test(cl) && /already|running|active|launched|using/.test(cl),
+    senior:         m('senior') || m('lead') || m('principal'),
+    globalHiring:   m('global') || m('worldwide') || !m('latam'),
+    raw: ctx || '',
+  };
+}
+
+// ─── Analysis Engine ──────────────────────────────────────────────────────
+
+function computeHealthScore(d, ctxObj) {
+  const p   = d.pipeline || {};
+  const vel = d.velocity || [];
+  const f   = d.funnel   || [];
+  const hired = p.totalHired || 0;
+  const gap   = Math.max(0, TARGET - hired);
+  const dl    = daysTo(DEADLINE);
+  const required = Math.max(BASE_VELOCITY, dl > 0 ? gap / (dl / 7) : BASE_VELOCITY);
+  const avgH = vel.length ? vel.reduce((a,w) => a + w.hires, 0) / vel.length : 0;
+  const conv = d.overallConversion || 0;
+  const total = Math.max(1, p.totalApplications || 1);
+  const sources = (d.sources || []).filter(s => s.total > 0);
+
+  // Velocity score (0-100)
+  const velocityScore = required > 0 ? Math.min(100, (avgH / required) * 100) : (avgH > 0 ? 80 : 20);
+
+  // Conversion score
+  const convScore = conv >= BENCH.overallConversion.good ? 90 :
+                    conv >= BENCH.overallConversion.warn  ? 55 :
+                    Math.round((conv / BENCH.overallConversion.warn) * 55);
+
+  // Funnel health (penalize bottlenecks)
+  const bottlenecks = f.filter((s, i) => i > 0 && s.passRate !== undefined && s.passRate < 0.15).length;
+  const funnelScore = Math.max(10, 100 - bottlenecks * 30);
+
+  // Source diversity
+  const topShare = sources.length > 0 ? sources[0].total / total : 1;
+  const divScore = topShare < 0.4 ? 90 : topShare < 0.6 ? 65 : topShare < 0.8 ? 38 : 18;
+
+  // Deadline buffer
+  const timeScore = dl > 90 ? 95 : dl > 45 ? 72 : dl > 21 ? 44 : dl > 7 ? 20 : 5;
+
+  const score = Math.min(99, Math.max(1, Math.round(
+    velocityScore * 0.30 +
+    convScore     * 0.22 +
+    funnelScore   * 0.20 +
+    divScore      * 0.10 +
+    timeScore     * 0.18
+  )));
+
+  const grade = score >= 75 ? 'Healthy' : score >= 50 ? 'On the Way' : 'Critical';
+  const color = score >= 75 ? '#0a9971' : score >= 50 ? '#b06c00' : '#d63232';
+
+  return { score, grade, color, velocityScore, convScore, funnelScore, divScore, timeScore };
+}
+
+function findBottleneck(d) {
+  const f = d.funnel || [];
+  const p = d.pipeline || {};
+  const total = Math.max(1, p.totalApplications || 1);
+
+  let worst = null;
+  f.forEach((stage, i) => {
+    if (i === 0 || stage.passRate === undefined) return;
+    if (stage.key === 'shortlist') return; // routing/assignment stage, not a quality filter
+    const entering = f[i - 1]?.totalReached || 1;
+    const lost = entering - stage.totalReached;
+    const dropRate = 1 - stage.passRate;
+    const score = dropRate * Math.log(entering + 1); // weight by stage size
+    if (!worst || score > worst.score) {
+      worst = {
+        score, stage: stage.stage, key: stage.key,
+        passRate: stage.passRate,
+        entering, reached: stage.totalReached, lost,
+        dropRate,
+        multiplier: stage.passRate > 0 ? (1 / stage.passRate).toFixed(1) : '∞',
+        hypothesis: bottleneckHypothesis(stage.key, stage.passRate),
+      };
+    }
+  });
+  return worst || { stage: 'Unknown', passRate: 0, hypothesis: 'Insufficient data' };
+}
+
+function bottleneckHypothesis(key, rate) {
+  const hypotheses = {
+    shortlist:               rate < 0.10 ? 'Aggressive early filtering — likely over-qualifying at resume review. Many strong candidates may be rejected before any human contact.'
+                                         : 'Shortlist conversion below benchmark. Review screening criteria against actual job requirements.',
+    interview1:              rate < 0.20 ? 'Interview 1 is eliminating too many candidates. Either the bar is too high, the wrong people are being screened, or the evaluation is misaligned with the role.'
+                                         : 'Interview 1 conversion needs attention — may indicate misalignment between sourcing quality and role criteria.',
+    techAssessment:          rate < 0.20 ? 'Technical Assessment is the primary constraint. At this pass rate, you need ' + Math.round(1/rate) + 'x more Interview 1 completions to generate one technical finalist. This stage is over-filtering relative to final quality.'
+                                         : 'Tech Assessment conversion below target. Review whether the assessment reflects actual day-1 job requirements (RAG, agents, LLMs vs. generic coding).',
+    cultureBehavior:         rate < 0.25 ? 'Culture/Behavior stage eliminating high volume. Risk of subjective bias or poorly calibrated criteria.'
+                                         : 'Culture stage conversion below benchmark.',
+    techInterviewSantiago:   rate < 0.30 ? 'Final technical interview has high drop-off. May indicate misalignment between earlier filtering and this stage\'s bar.'
+                                         : 'Final tech interview stage needs review.',
+    additionalCertification: 'Final certification stage creating friction. Evaluate whether this stage adds sufficient signal vs. candidate attrition cost.',
+  };
+  return hypotheses[key] || `${Math.round((1 - rate) * 100)}% of candidates do not advance from this stage.`;
+}
+
+function diagnoseFunnel(d) {
+  const f = d.funnel || [];
+  return f.map((stage, i) => {
+    if (i === 0) return { ...stage, status: 'info', flag: '—', insight: `All ${num(stage.totalReached)} applicants enter here.` };
+    // Shortlist is a recruiter assignment/routing stage, not a quality filter
+    if (stage.key === 'shortlist') return { ...stage, status: 'info', flag: '→', isRouting: true, insight: `Routing stage — applicants are distributed to recruiters here. The pass rate reflects assignment logistics, not candidate quality filtering, and should not be interpreted as a conversion metric.` };
+    const r = stage.passRate;
+    let status, flag, insight;
+    const OVER   = 0.80;
+    const CRIT   = 0.15;
+    const benchKey = stage.key === 'shortlist' ? 'shortlistPass' :
+                     stage.key === 'interview1' ? 'interview1Pass' :
+                     stage.key === 'techAssessment' ? 'techPass' : null;
+    const bench = benchKey ? BENCH[benchKey] : { good: 0.40, warn: 0.22 };
+
+    if (r === undefined) {
+      status = 'info'; flag = '—'; insight = 'No data available for this stage.';
+    } else if (r >= OVER) {
+      status = 'warn'; flag = '⚠';
+      insight = `${pct(r)} pass rate may indicate under-filtering. If this stage is meant to assess quality, a very high pass rate suggests criteria may not be selective enough.`;
+    } else if (r < CRIT) {
+      status = 'alert'; flag = '✗';
+      insight = `${pct(r)} pass rate is critically low. You need ${Math.round(1/r)} candidates entering this stage to generate 1 advance. This is your primary throughput constraint.`;
+    } else if (bench && r < bench.warn) {
+      status = 'warn'; flag = '⚠';
+      insight = `${pct(r)} pass rate — below industry benchmark (${pct(bench.warn)}–${pct(bench.good)}) for this stage. ${bottleneckHypothesis(stage.key, r)}`;
+    } else {
+      status = 'ok'; flag = '✓';
+      insight = `${pct(r)} pass rate is within normal range for this stage. ${stage.totalReached} candidates advanced.`;
+    }
+    return { ...stage, status, flag, insight };
+  });
+}
+
+function analyzeChannels(d) {
+  const sources = (d.sources || []).filter(s => s.total > 0);
+  const p = d.pipeline || {};
+  const total = Math.max(1, p.totalApplications || 1);
+
+  return sources.map(s => {
+    const q = s.interview1PassRate || 0;
+    const qualityClass = q >= BENCH.interview1Pass.good ? 'good' :
+                         q >= BENCH.interview1Pass.warn  ? 'ok'   : 'low';
+    let rec, recClass;
+    if (q >= BENCH.interview1Pass.good && s.hires > 0) { rec = '↑ Scale up'; recClass = 'badge-ok'; }
+    else if (q >= BENCH.interview1Pass.warn)            { rec = '→ Maintain'; recClass = 'badge-purple'; }
+    else if (s.total > 30 && s.hires === 0)             { rec = '↓ Reduce';   recClass = 'badge-warn'; }
+    else                                                 { rec = '? Evaluate'; recClass = 'badge-warn'; }
+    return {
+      ...s,
+      share: (s.total / total),
+      qualityClass, rec, recClass,
+      conversionRate: s.total > 0 ? s.hires / s.total : 0,
+    };
+  });
+}
+
+function computeEconomics(d, ctxObj) {
+  const p    = d.pipeline || {};
+  const vel  = d.velocity || [];
+  const gap  = Math.max(0, TARGET - (p.totalHired || 0));
+  const dl   = daysTo(DEADLINE);
+  const avgH = vel.length ? vel.reduce((a,w) => a + w.hires, 0) / vel.length : 0;
+  const active = p.totalActive || 0;
+
+  // Revenue opportunity cost per unfilled AI engineer ($30K/year = ~$577/week)
+  const weeklyValuePerEng = REVENUE_PER_ENG / 52;
+  const weeklyDelayCost   = gap * weeklyValuePerEng;
+
+  // Estimated cost per hire (benchmarks for AI Engineers)
+  const avgSalary  = 90000; // USD, conservative LATAM estimate
+  const agencyCost = avgSalary * 0.20;
+  const recruiterTime = 40; // hours per hire
+  const recruiterRate = 35; // $/hr for in-house
+  const estCostPerHire = (ctxObj.recruiters || 1) > 1
+    ? recruiterTime * recruiterRate
+    : agencyCost * 0.5; // partial agency
+
+  // Estimated waste: active pipeline candidates that are stale (no stage movement)
+  const staleCandidates = Math.max(0, active - Math.round(gap * 4));
+  const wastedRecruiterHours = staleCandidates * 0.5;
+
+  // LinkedIn data (from context)
+  const liCph = ctxObj.liSpend && p.totalHired > 0 ? ctxObj.liSpend / p.totalHired : null;
+
+  // Opportunity cost assessment
+  const isSourceBottleneck = active < gap * 3;
+  const isProcessBottleneck = !isSourceBottleneck;
+
+  return {
+    weeklyDelayCost,
+    totalDelayCostIfMissTarget: weeklyDelayCost * Math.max(0, (dl / 7)),
+    estCostPerHire,
+    staleCandidates,
+    wastedRecruiterHours,
+    liSpend:   ctxObj.liSpend,
+    liCpa:     ctxObj.liCpa,
+    liCph,
+    isSourceBottleneck,
+    isProcessBottleneck,
+    primaryConstraint: isSourceBottleneck ? 'sourcing' : 'process',
+    insight: isSourceBottleneck
+      ? `Pipeline has ${active} active candidates for a ${gap}-hire gap. Volume is the constraint — investing in sourcing channels will directly improve outcomes.`
+      : `Pipeline has ${active} active candidates for a ${gap}-hire gap. Increasing sourcing spend is unlikely to improve outcomes — the constraint is downstream process throughput, not applicant volume.`,
+  };
+}
+
+function computeForecast(d, ctxObj) {
+  const p    = d.pipeline || {};
+  const vel  = d.velocity || [];
+  const hired = p.totalHired || 0;
+  const gap   = Math.max(0, TARGET - hired);
+  const dl    = daysTo(DEADLINE);
+  const avgH  = vel.length ? vel.reduce((a,w) => a + w.hires, 0) / vel.length : 0;
+  const required = Math.max(BASE_VELOCITY, dl > 0 ? gap / (dl / 7) : BASE_VELOCITY);
+  const weeksToTarget = avgH > 0 ? Math.ceil(gap / avgH) : 999;
+  const projDate = new Date();
+  projDate.setDate(projDate.getDate() + weeksToTarget * 7);
+
+  const scenarioReferralBoost  = avgH * 1.4; // referral sprint: +40% velocity
+  const scenarioProcessBoost   = avgH * 1.6; // compressed process: +60% offer acceptance improvement
+  const scenarioCombined       = avgH * 2.1; // combined: both
+
+  const weeksRef  = scenarioReferralBoost  > 0 ? Math.ceil(gap / scenarioReferralBoost)  : 999;
+  const weeksProc = scenarioProcessBoost   > 0 ? Math.ceil(gap / scenarioProcessBoost)   : 999;
+  const weeksComb = scenarioCombined       > 0 ? Math.ceil(gap / scenarioCombined)        : 999;
+
+  const fmt = weeks => {
+    if (weeks >= 999) return 'Unlikely without changes';
+    const d2 = new Date(); d2.setDate(d2.getDate() + weeks * 7);
+    return d2.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  };
+
+  const onTrack = weeksToTarget * 7 <= dl;
+
+  return {
+    avgH, required, gap, dl, hired, onTrack,
+    projDate: fmt(weeksToTarget),
+    weeksToTarget,
+    paceLabel: required > 0 ? `${required.toFixed(1)}/wk required` : 'Target met',
+    paceCurrent: `${avgH.toFixed(1)}/wk current`,
+    deficit: Math.max(0, required - avgH),
+    scenarios: [
+      { label: 'Current pace', hires: hired + Math.round(avgH * (dl / 7)), date: fmt(weeksToTarget), dot: onTrack ? 'g' : 'a', badge: onTrack ? 'badge-ok' : 'badge-warn', badgeLabel: onTrack ? 'On target' : 'Below target' },
+      { label: 'Referral sprint', hires: hired + Math.round(scenarioReferralBoost * (dl / 7)), date: fmt(weeksRef), dot: weeksRef * 7 <= dl ? 'g' : 'a', badge: weeksRef * 7 <= dl ? 'badge-ok' : 'badge-warn', badgeLabel: weeksRef * 7 <= dl ? 'Closes gap' : 'Partial' },
+      { label: 'Process compression', hires: hired + Math.round(scenarioProcessBoost * (dl / 7)), date: fmt(weeksProc), dot: weeksProc * 7 <= dl ? 'g' : 'a', badge: weeksProc * 7 <= dl ? 'badge-ok' : 'badge-warn', badgeLabel: weeksProc * 7 <= dl ? 'Closes gap' : 'Partial' },
+      { label: 'Combined (referral + process)', hires: hired + Math.round(scenarioCombined * (dl / 7)), date: fmt(weeksComb), dot: 'g', badge: 'badge-ok', badgeLabel: 'Most likely to close' },
+    ],
+  };
+}
+
+function generateSimulations(d, ctxObj) {
+  const p    = d.pipeline || {};
+  const econ = computeEconomics(d, ctxObj);
+  const conv = d.overallConversion || 0;
+  const total = Math.max(1, p.totalApplications || 1);
+  const gap   = Math.max(0, TARGET - (p.totalHired || 0));
+  const dl    = daysTo(DEADLINE);
+
+  const isProcessConstrained = econ.isProcessBottleneck;
+
+  return [
+    {
+      id: 's1', icon: '📢',
+      title: 'Increase LinkedIn Ads spend +20%',
+      assumption: '+20% budget → proportional applicant volume increase',
+      impact: isProcessConstrained
+        ? `+${Math.round(total * 0.20)} applications → ~+${Math.round(total * 0.20 * conv)} hires (limited by downstream constraint)`
+        : `+${Math.round(total * 0.20)} applications → ~+${Math.round(total * 0.20 * conv)} hires`,
+      effort: 'Low',
+      timeline: '3–4 weeks to see results',
+      confidence: isProcessConstrained ? 'Low' : 'Medium',
+      verdict: isProcessConstrained ? 'low' : 'medium',
+      verdictLabel: isProcessConstrained ? 'Low Impact' : 'Medium Impact',
+      constraint: isProcessConstrained
+        ? `The constraint is not sourcing — it\'s downstream throughput. Adding more applicants to a constrained funnel does not proportionally increase hires. Fix the process bottleneck first.`
+        : `Sourcing is the constraint here. Additional volume will translate to hires at current conversion rates.`,
+      tradeoff: 'Increases recruiter screening load. Without improving downstream throughput, may create a backlog.',
+    },
+    {
+      id: 's2', icon: '👥',
+      title: 'Launch referral sprint ($2–3K incentive)',
+      assumption: 'Engineering team referrals convert 3–5x better than cold sourcing',
+      impact: `~8–12 new referrals → 5–8 qualified → est. +2–4 hires (3–4x conversion vs. job boards)`,
+      effort: 'Low',
+      timeline: '2 weeks to see candidates',
+      confidence: 'High',
+      verdict: 'high',
+      verdictLabel: 'High Impact',
+      constraint: `Requires engineering team activation. Works best with specific ask ("Do you know any ML engineers who...") not a broadcast message.`,
+      tradeoff: '$2–3K incentive cost — estimated lowest cost-per-hire of any channel at this stage.',
+    },
+    {
+      id: 's3', icon: '⚡',
+      title: 'Compress process by 5–7 days',
+      assumption: 'Parallel stage scheduling and 24h feedback SLA — no stages removed',
+      impact: `+15–20% offer acceptance (less candidate ghosting) → est. +${Math.round(gap * 0.18)} additional hires from same pipeline`,
+      effort: 'Medium',
+      timeline: '1 week to implement, immediate effect',
+      confidence: 'High',
+      verdict: 'high',
+      verdictLabel: 'High Impact',
+      constraint: `Requires interview panel coordination and explicit calendar commitments. Main risk: inter-stage scheduling delays, not stage quality.`,
+      tradeoff: 'Faster process may increase pressure on interviewers. Mitigate with structured scorecards.',
+    },
+    {
+      id: 's4', icon: '✂️',
+      title: 'Remove or shorten take-home test',
+      assumption: 'Eliminating 4–6hr async test removes primary friction for senior candidates',
+      impact: `+15–22% offer acceptance from senior profiles → est. +${Math.round(gap * 0.18)} hires from existing pipeline`,
+      effort: 'Low',
+      timeline: 'Immediate',
+      confidence: 'High',
+      verdict: 'high',
+      verdictLabel: 'High Impact',
+      constraint: `Must replace with structured technical interview or 90-min live coding session. The signal requirement doesn't go away — just moves to a less attrition-heavy format.`,
+      tradeoff: 'Live technical evaluation requires more interviewer time. Batching helps. Consider async 45-min video review as a middle path.',
+    },
+    {
+      id: 's5', icon: '🌎',
+      title: 'Expand sourcing to Brazil + Colombia',
+      assumption: 'New geo with strong AI engineer talent, 40% lower CPC than Perú/Argentina',
+      impact: `+${Math.round(total * 0.25)}–${Math.round(total * 0.35)} applications → est. +${Math.round(total * 0.30 * conv * 1.1)} hires (similar quality profile)`,
+      effort: 'Medium',
+      timeline: '4–6 weeks to see quality signals',
+      confidence: 'Medium',
+      verdict: 'medium',
+      verdictLabel: 'Medium Impact',
+      constraint: `Requires localized job descriptions (Portuguese). Time zone alignment manageable for async roles. Main risk: interview scheduling complexity increases.`,
+      tradeoff: 'Volume increase without immediate quality guarantee. Requires 4-week monitoring period.',
+    },
+  ];
+}
+
+function generateRecs(d, ctxObj) {
+  const p    = d.pipeline || {};
+  const f    = d.funnel   || [];
+  const conv = d.overallConversion || 0;
+  const hired = p.totalHired || 0;
+  const gap   = Math.max(0, TARGET - hired);
+  const dl    = daysTo(DEADLINE);
+  const econ  = computeEconomics(d, ctxObj);
+  const bot   = findBottleneck(d);
+  const avgH  = (d.velocity || []).length ? (d.velocity || []).reduce((a,w) => a+w.hires,0)/(d.velocity||[]).length : 0;
+
+  const p0 = [], p1 = [], p2 = [];
+
+  // P0: Critical, act this week
+  if (gap > 3 && avgH < gap / (dl / 7) * 0.7) {
+    p0.push({
+      title: `Compress all interview stages to parallel scheduling — enforce 48h inter-stage SLA`,
+      rationale: `At ${avgH.toFixed(1)} hires/week, the pipeline is at ${Math.round(avgH / (gap / (dl/7)) * 100)}% of required velocity. The fastest lever is reducing calendar friction between stages — not adding candidates. Every day of delay in a multi-stage process compounds attrition risk.`,
+      impact: '+15–20% offer acceptance improvement from reducing ghosting and competing-offer losses',
+      effort: 'Low', urgency: 'This week', confidence: 'High',
+      tags: ['urgent', 'high-impact'],
+    });
+  }
+
+  if (d.referralHires < 2 && !ctxObj.referralActive) {
+    p0.push({
+      title: `Launch 2-week referral sprint with engineering team — $2K cash incentive per hire`,
+      rationale: `Current referral share: ${d.referralHires || 0} hires (benchmark: 30%+ of hires). Referrals convert 3–5x better than job boards with significantly lower cost-per-hire. This is the single highest-ROI action available at this pipeline stage. Assign one person to manage it actively.`,
+      impact: 'Est. 3–5 additional qualified candidates in 14 days → 2–3 additional hires',
+      effort: 'Low', urgency: 'This week', confidence: 'High',
+      tags: ['high-impact'],
+    });
+  } else if (ctxObj.referralActive) {
+    p0.push({
+      title: `Maximize active referral program — switch from broadcast to targeted asks`,
+      rationale: `Referral program is live but may not be converting at full potential. Move from "anyone who knows an AI engineer" (broadcast) to specific targeted asks: "Do you know anyone who worked on LLM pipelines at [company X]?" Specificity increases conversion 2–3x over generic asks.`,
+      impact: '+30–50% improvement in referral conversion from same team',
+      effort: 'Low', urgency: 'This week', confidence: 'High',
+      tags: ['high-impact'],
+    });
+  }
+
+  if (bot && bot.passRate < 0.22 && bot.key === 'techAssessment') {
+    p0.push({
+      title: `Redesign Technical Assessment — replace 4hr take-home with 90-min structured technical interview`,
+      rationale: `Technical Assessment has a ${pct(bot.passRate)} pass rate — you need ${bot.multiplier}x the Interview 1 volume to generate one technical finalist. This is the primary throughput constraint. A 4-hour async test at this stage loses the highest-quality candidates who have competing offers and won't invest 4hrs until final rounds.`,
+      impact: `+18–25% offer acceptance improvement, ${bot.multiplier}x reduction in funnel multiplier at this stage`,
+      effort: 'Medium', urgency: 'This week', confidence: 'High',
+      tags: ['urgent', 'high-impact'],
+    });
+  }
+
+  // P1: High priority, 2-4 weeks
+  if (conv < BENCH.overallConversion.warn) {
+    p1.push({
+      title: `Add 15-min async pre-screen before formal pipeline entry — Loom video or structured form`,
+      rationale: `Overall conversion of ${pct(conv)} vs 2–8% benchmark indicates that many candidates entering the formal pipeline are not qualified. A lightweight pre-screen filter before full application review reduces recruiter load and improves downstream signal quality without adding candidate friction at a critical early point.`,
+      impact: '+20–35% improvement in shortlist quality, reduced recruiter screening time by ~40%',
+      effort: 'Low', urgency: '2–4 weeks', confidence: 'Medium',
+      tags: ['high-impact'],
+    });
+  }
+
+  if (ctxObj.hasLinkedIn && ctxObj.liCpa && ctxObj.liCpa > 100) {
+    p1.push({
+      title: `Optimize LinkedIn Ads targeting — narrow audience and A/B test creative before scaling`,
+      rationale: `Cost per application from LinkedIn: $${Math.round(ctxObj.liCpa)} (benchmark: $40–90 for AI engineers). Current spend is above efficient range. Before increasing budget, narrow the targeting: AI/ML Job function + Machine Learning/LLMs/PyTorch skills + 3–8 years experience + LatAm geo. A/B test 2 creative variants for 2 weeks before allocating more spend.`,
+      impact: 'Est. 30–50% reduction in cost per application with same or better quality',
+      effort: 'Low', urgency: '2 weeks', confidence: 'High',
+      tags: ['high-impact'],
+    });
+  } else if (!ctxObj.gobActive) {
+    p1.push({
+      title: `Activate Get on Board — full company profile, salary range visible, respond within 24h`,
+      rationale: `Get on Board is the primary specialized technical job board for LatAm AI/ML talent. Without a full profile and visible salary range, the job post generates 40–60% fewer qualified applications. Response speed (<24h to first contact) has the single highest impact on candidate-to-interview conversion at this channel.`,
+      impact: 'Est. 40–80 additional qualified applicants/month at ~$0 incremental cost',
+      effort: 'Low', urgency: '2–4 weeks', confidence: 'Medium',
+      tags: [],
+    });
+  } else {
+    p1.push({
+      title: `Increase Get on Board post activity — respond to all interest within 24h, update salary range visibility`,
+      rationale: `Get on Board is active. Maximize performance: ensure salary is visible (increases apply rate by ~40%), refresh the job post (algorithm boosts recently active posts), and maintain <24h response time to candidate interest signals.`,
+      impact: 'Est. +20–40% improvement in GoB application-to-screen conversion',
+      effort: 'Low', urgency: '2 weeks', confidence: 'Medium',
+      tags: [],
+    });
+  }
+
+  p1.push({
+    title: `Calibrate Technical Assessment criteria against actual day-1 job requirements`,
+    rationale: `Technical assessments for AI Engineers often drift toward generic coding problems (LeetCode-style) rather than actual job-relevant skills (RAG pipelines, agent architectures, LLM fine-tuning, prompt optimization). A misaligned assessment rejects strong practitioners and passes theoretical candidates. Quarterly calibration with the hiring manager is the highest-leverage quality intervention.`,
+    impact: 'Improved quality of technical finalists, reduced post-hire calibration gap',
+    effort: 'Low', urgency: '2–4 weeks', confidence: 'Medium',
+    tags: [],
+  });
+
+  // P2: Strategic, 1-3 months
+  p2.push({
+    title: `Build warm pipeline for next hiring cycle — tag "strong but not now" candidates for 90-day re-engagement`,
+    rationale: `Top candidates rejected today become your highest-conversion outbound prospects in 3–6 months. Implement a "silver medal" workflow: add strong rejected candidates to a re-engagement sequence with a 90-day delay. This converts at 3–4x the rate of cold outbound.`,
+    impact: 'Reduces future sourcing cost by 30–40% for subsequent AI engineer hires',
+    effort: 'Low', urgency: '1 month', confidence: 'Medium',
+    tags: [],
+  });
+
+  p2.push({
+    title: `Develop AI engineer employer branding — publish 2–3 real project case studies per quarter`,
+    rationale: `AI engineers evaluate companies primarily on technical credibility and project impact — not perks. Publishing real case studies (RAG systems built, models deployed, scale achieved) on LinkedIn and ML communities (Hugging Face Hub, Weights & Biases, Papers With Code) generates qualified inbound at near-zero incremental cost.`,
+    impact: 'Long-term: 20–40% increase in organic qualified inbound within 6 months',
+    effort: 'Medium', urgency: '1–2 months', confidence: 'Medium',
+    tags: [],
+  });
+
+  p2.push({
+    title: `Measure 6-month retention of current AI engineer hires — feed back into filter calibration`,
+    rationale: `Hiring velocity without retention tracking optimizes the wrong metric. If current hires churn within 6 months, the true cost-per-hire 3–5x. Set up a 30/60/90/180-day check-in process for all AI engineer hires. The data directly informs cultural and technical filter calibration for next cycle.`,
+    impact: 'Ultimate quality metric — determines whether the hiring machine is producing retained value',
+    effort: 'Low', urgency: '1 month', confidence: 'High',
+    tags: [],
+  });
+
+  return { p0, p1, p2 };
+}
+
+function detectContextGaps(d, ctxObj) {
+  const questions = [];
+  const p = d.pipeline || {};
+  const sources = d.sources || [];
+  const hasLinkedIn = sources.some(s => s.name?.toLowerCase().includes('linkedin'));
+
+  if (!ctxObj.hasLinkedIn) {
+    questions.push({
+      id: 'gap-li-spend',
+      label: 'Monthly LinkedIn Ads spend ($)',
+      placeholder: 'e.g. 4200',
+      hint: 'Needed for ROI analysis and channel comparison',
+    });
+  }
+  if (!ctxObj.recruiters) {
+    questions.push({
+      id: 'gap-recruiters',
+      label: 'Recruiters working this pipeline',
+      placeholder: 'e.g. 2',
+      hint: 'Affects capacity and throughput estimates',
+    });
+  }
+  if (!ctxObj.isUrgent && !ctxObj.raw) {
+    questions.push({
+      id: 'gap-urgency',
+      label: 'Is this role blocking a product launch or team goal?',
+      placeholder: 'e.g. Yes — Q3 launch depends on 3 AI hires',
+      hint: 'Adjusts recommendation urgency and tradeoffs',
+    });
+  }
+  return questions.slice(0, 3);
+}
+
+// ─── Render Functions ──────────────────────────────────────────────────────
+
+function renderCommandCenter(d, analysis, ctxObj) {
+  const { health, bot, forecast, econ } = analysis;
+  const p    = d.pipeline || {};
+  const hired = p.totalHired || 0;
+  const gap   = Math.max(0, TARGET - hired);
+  const dl    = daysTo(DEADLINE);
+  const prog  = Math.min(100, Math.round(hired / TARGET * 100));
+  const onTrack = forecast.onTrack;
+
+  const circleColor = health.color;
+  const r = 30, cx = 36, cy = 36, circ = 2 * Math.PI * r;
+  const dash = ((health.score / 100) * circ).toFixed(1);
+
+  const healthCard = `
+    <div class="health-score-card" style="grid-column:1/span 2">
+      <div class="hs-circle" style="background:${circleColor}18">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${circleColor}22" stroke-width="5"/>
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${circleColor}" stroke-width="5"
+            stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
+        </svg>
+        <div class="hs-num" style="color:${circleColor}">${health.score}</div>
+      </div>
+      <div class="hs-info">
+        <div class="hs-grade" style="color:${circleColor}">Pipeline Health: ${health.grade}</div>
+        <div class="hs-components">
+          Velocity <strong>${Math.round(health.velocityScore)}%</strong> · Conversion <strong>${Math.round(health.convScore)}%</strong> · Funnel <strong>${Math.round(health.funnelScore)}%</strong> · Deadline <strong>${Math.round(health.timeScore)}%</strong>
+        </div>
+      </div>
+    </div>`;
+
+  const velVsTarget = Math.min(100, Math.round(forecast.avgH / BASE_VELOCITY * 100));
+  const signalCards = [
+    {
+      lbl: 'Hiring Velocity', sdot: forecast.avgH >= BASE_VELOCITY ? 'ok' : forecast.avgH >= BASE_VELOCITY * 0.6 ? 'warn' : 'alert pulse',
+      val: `${forecast.avgH.toFixed(1)}<span style="font-size:14px;font-weight:500;color:var(--text2)">/wk</span>`,
+      valClass: forecast.avgH >= BASE_VELOCITY ? 'good' : forecast.avgH >= BASE_VELOCITY * 0.6 ? 'warn' : 'alert',
+      sub: `Goal: <strong>${BASE_VELOCITY}/wk</strong> · ${hired}/${TARGET} hired · ${gap} remaining`,
+      bar: { val: velVsTarget, color: forecast.avgH >= BASE_VELOCITY ? 'var(--green)' : forecast.avgH >= BASE_VELOCITY * 0.6 ? 'var(--amber)' : 'var(--red)' },
+    },
+    {
+      lbl: 'Critical Bottleneck', sdot: bot?.passRate < 0.20 ? 'alert pulse' : 'warn',
+      val: `<span class="sc-val muted" style="color:var(--red)">${bot?.stage || '—'}</span>`,
+      valClass: '',
+      sub: bot ? `<strong>${pct(bot.passRate)}</strong> pass rate · ${bot.multiplier}x funnel multiplier` : 'No bottleneck detected',
+    },
+    {
+      lbl: 'Overall Conversion', sdot: rateClass(d.overallConversion||0, BENCH.overallConversion) === 'ok' ? 'ok' : rateClass(d.overallConversion||0, BENCH.overallConversion) === 'warn' ? 'warn' : 'alert',
+      val: `<span style="color:${rateColor(d.overallConversion||0, BENCH.overallConversion)}">${pct(d.overallConversion||0)}</span>`,
+      valClass: '',
+      sub: `Benchmark ≥ ${pct(BENCH.overallConversion.good)} · <strong>${num(p.totalApplications)} applicants</strong>`,
+    },
+  ];
+
+  const pulseHtml = `
+    <div class="pulse-row" style="margin-top:12px">
+      ${[
+        { lbl: 'Total Applicants', val: num(p.totalApplications), color: 'var(--text)' },
+        { lbl: 'Active Pipeline', val: num(p.totalActive), color: 'var(--blue)' },
+        { lbl: 'Hired', val: num(hired), color: 'var(--green)' },
+        { lbl: 'Pending Offer', val: num(p.pendingOffer), color: 'var(--amber)' },
+        { lbl: 'Days Left', val: dl, color: dl < 30 ? 'var(--red)' : dl < 60 ? 'var(--amber)' : 'var(--green)' },
+        { lbl: 'Forecast', val: onTrack ? '✓ On Track' : '⚠ Off Track', color: onTrack ? 'var(--green)' : 'var(--red)' },
+      ].map(t => `
+        <div class="pulse-tile">
+          <div class="pt-lbl">${t.lbl}</div>
+          <div class="pt-val" style="color:${t.color}">${t.val}</div>
+        </div>
+      `).join('')}
+    </div>`;
+
+  return `
+    <section class="sec" id="s-command">
+      <div class="sec-eyebrow">Executive Command Center</div>
+      <div class="sec-title">Pipeline Intelligence Overview</div>
+      <div class="sec-desc">Live status of your AI Engineer recruiting funnel — what's happening right now.</div>
+
+
+      <div class="signal-row" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+        ${healthCard}
+        ${signalCards.map(c => `
+          <div class="signal-card">
+            <div class="sc-lbl"><div class="sdot ${c.sdot}"></div>${c.lbl}</div>
+            <div class="sc-val ${c.valClass}">${c.val}</div>
+            <div class="sc-sub">${c.sub}</div>
+            ${c.bar ? `<div class="sc-prog"><div class="sc-prog-fill" style="width:${c.bar.val}%;background:${c.bar.color}"></div></div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+      ${pulseHtml}
+    </section>`;
+}
+
+function renderFunnelSection(d, analysis) {
+  const { funnelDiag, bot } = analysis;
+  const max = funnelDiag[0]?.totalReached || 1;
+
+  const botCallout = bot && bot.passRate < 0.30 ? `
+    <div class="bottleneck-callout">
+      <div class="bc-icon">⛔</div>
+      <div>
+        <div class="bc-title">Primary Bottleneck: ${bot.stage}</div>
+        <div class="bc-text">${bot.hypothesis} You need <strong>${bot.multiplier}x</strong> the current inflow at this stage to generate one additional hire. This stage multiplies your sourcing cost by ${bot.multiplier}×.</div>
+      </div>
+    </div>` : '';
+
+  const flagColor = s => s === 'ok' ? 'var(--green)' : s === 'warn' ? 'var(--amber)' : s === 'alert' ? 'var(--red)' : 'var(--text3)';
+  const rowClass  = (s, key) => key === bot?.key && bot?.passRate < 0.25 ? 'bottleneck-row' : s === 'warn' ? 'warn-row' : '';
+
+  const funnelHtml = `
+    <div class="funnel-wrap">
+      <div class="funnel-header">
+        <div>Stage</div><div>Volume</div>
+        <div style="text-align:right;color:var(--purple)">Active</div>
+        <div style="text-align:right">Total</div>
+        <div style="text-align:right">Pass Rate</div><div></div>
+      </div>
+      ${funnelDiag.map((r, i) => {
+        const w = (r.totalReached / max * 100).toFixed(1);
+        const barColor = i === 0 ? 'var(--purple)' : r.status === 'ok' ? 'var(--green)' : r.status === 'warn' ? 'var(--amber)' : r.status === 'alert' ? 'var(--red)' : 'var(--border)';
+        return `
+          <div class="funnel-row ${rowClass(r.status, r.key)}">
+            <div class="f-stage">${r.stage}</div>
+            <div class="f-track"><div class="f-fill" style="width:${w}%;background:${barColor}"></div></div>
+            <div class="f-active">${num(r.activeAtStage)}</div>
+            <div class="f-n">${num(r.totalReached)}</div>
+            <div class="f-rate" style="color:${i===0?'var(--text3)':flagColor(r.status)}">${i===0?'—':pct(r.passRate)}</div>
+            <div class="f-flag" style="color:${flagColor(r.status)}">${r.flag}</div>
+            <div class="f-insight">${r.insight}</div>
+          </div>`;
+      }).join('')}
+    </div>`;
+
+  return `
+    <section class="sec" id="s-funnel">
+      <div class="sec-eyebrow">Funnel Diagnosis</div>
+      <div class="sec-title">Stage-by-Stage Conversion Analysis</div>
+      <div class="sec-desc">Where the pipeline breaks, why it breaks, and what it costs. Hover over any stage for the diagnostic insight.</div>
+      ${botCallout}
+      ${funnelHtml}
+      <div class="insight-note purple" style="margin-top:12px">
+        <div class="in-label">Funnel math</div>
+        To generate <strong>${TARGET - (d.pipeline?.totalHired||0)} additional hires</strong> at current pass rates, you need approximately <strong>${Math.round((TARGET - (d.pipeline?.totalHired||0)) / Math.max(.01, d.overallConversion||.01))} additional applicants</strong> entering the top of the funnel — or you fix the bottleneck stage.
+      </div>
+    </section>`;
+}
+
+function renderChannelSection(d, analysis) {
+  const { channels } = analysis;
+  const coverage = d.sourceDataCoverage || 0;
+
+  if (coverage < 0.15 || channels.length < 2) {
+    return `
+      <section class="sec" id="s-channels">
+        <div class="sec-eyebrow">Channel Intelligence</div>
+        <div class="sec-title">Source & Channel Performance</div>
+        <div class="insight-note amber">
+          <div class="in-label">Limited source data</div>
+          Ashby is not returning reliable source attribution for this pipeline (${Math.round(coverage*100)}% of applications have source data). To unlock full channel intelligence, ensure source tracking is configured in Ashby for all job postings and candidate entries.
+        </div>
+      </section>`;
+  }
+
+  const maxTotal = Math.max(1, ...channels.map(c => c.total));
+
+  return `
+    <section class="sec" id="s-channels">
+      <div class="sec-eyebrow">Channel Intelligence</div>
+      <div class="sec-title">Source & Channel Performance</div>
+      <div class="sec-desc">Which channels produce volume, which produce quality, and where to invest next.</div>
+      <div class="channel-table">
+        <div class="ct-header">
+          <div>Source</div><div>Volume</div><div>Hires</div><div>→ Intv.1</div><div>Conv.%</div><div>Recommendation</div>
+        </div>
+        ${channels.map(c => `
+          <div class="ct-row">
+            <div class="ct-name">${esc(c.name)}</div>
+            <div class="ct-n" style="display:flex;align-items:center;gap:8px">
+              <div style="flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;min-width:40px">
+                <div style="height:100%;width:${(c.total/maxTotal*100).toFixed(0)}%;background:var(--purple);opacity:.6;border-radius:3px"></div>
+              </div>
+              ${num(c.total)}
+            </div>
+            <div class="ct-n">${num(c.hires)}</div>
+            <div class="ct-rate" style="color:${rateColor(c.interview1PassRate, BENCH.interview1Pass)}">${pct(c.interview1PassRate)}</div>
+            <div class="ct-rate" style="color:${c.conversionRate > 0.03 ? 'var(--green)' : c.conversionRate > 0.01 ? 'var(--amber)' : 'var(--text3)'}">${c.hires > 0 ? pct(c.conversionRate) : '—'}</div>
+            <div><span class="badge ${c.recClass}">${c.rec}</span></div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="insight-note ${d.referralHires < 2 ? 'amber' : 'green'}" style="margin-top:4px">
+        <div class="in-label">${d.referralHires < 2 ? 'Referral gap' : 'Referral signal'}</div>
+        ${d.referralHires < 2
+          ? `Referrals account for <strong>${d.referralHires || 0} hires</strong> — benchmark is 30%+ of all hires for this profile. This is the highest-ROI unrealized lever. Referrals from AI engineers reach AI engineers — cold channels cannot replicate network quality.`
+          : `Referral program is contributing <strong>${d.referralHires} hires</strong> (${pct(d.referralShareOfHires)} of total). ${d.referralShareOfHires >= BENCH.referralShare.good ? 'At or above benchmark — maintain incentive program.' : 'Room to grow — referral share benchmark is 30%+'}.`}
+      </div>
+    </section>`;
+}
+
+function renderEconomicsSection(d, analysis, ctxObj) {
+  const econ = analysis.econ;
+
+  const liCard = ctxObj.hasLinkedIn && ctxObj.liSpend ? `
+    <div class="econ-card">
+      <div class="ec-label">LinkedIn Cost / Application</div>
+      <div class="ec-val ${ctxObj.liCpa > 120 ? 'alert' : ctxObj.liCpa > 70 ? 'warn' : ''}">$${ctxObj.liCpa ? Math.round(ctxObj.liCpa) : '—'}</div>
+      <div class="ec-desc">From $${num(ctxObj.liSpend)} spend${ctxObj.liClicks ? ` · ${num(ctxObj.liClicks)} clicks` : ''}. Benchmark: $40–90 for AI engineers.</div>
+    </div>` : '';
+
+  return `
+    <section class="sec" id="s-economics">
+      <div class="sec-eyebrow">Hiring Economics</div>
+      <div class="sec-title">Cost, Waste & ROI Analysis</div>
+      <div class="sec-desc">What the pipeline is costing you — and what's being wasted. Think like a CFO.</div>
+      <div class="econ-grid">
+        <div class="econ-card">
+          <div class="ec-label">Weekly Delay Cost</div>
+          <div class="ec-val warn">$${Math.round(econ.weeklyDelayCost/1000)}K</div>
+          <div class="ec-desc">Revenue not yet generated by ${Math.max(0, TARGET - (d.pipeline?.totalHired||0))} unfilled roles ($${Math.round(REVENUE_PER_ENG/52).toLocaleString()}/wk/engineer × ${Math.max(0, TARGET - (d.pipeline?.totalHired||0))} roles). Based on $${(REVENUE_PER_ENG/1000).toFixed(0)}K/year per engineer.</div>
+        </div>
+        <div class="econ-card">
+          <div class="ec-label">Est. Cost / Hire</div>
+          <div class="ec-val">$${Math.round(econ.estCostPerHire/1000)}K</div>
+          <div class="ec-desc">Recruiter time estimate. Excludes LinkedIn Ads. AI engineers in LATAM: $8–25K full cost-per-hire depending on channel mix.</div>
+        </div>
+        ${liCard}
+        <div class="econ-card">
+          <div class="ec-label">Stale Pipeline Candidates</div>
+          <div class="ec-val ${econ.staleCandidates > 20 ? 'warn' : ''}">${econ.staleCandidates}</div>
+          <div class="ec-desc">Est. candidates active in pipeline beyond expected cycle time. Each represents ~0.5hr/week of unproductive recruiter effort.</div>
+        </div>
+      </div>
+      <div class="econ-insight">
+        <div class="ei-label">CFO Diagnosis</div>
+        ${econ.insight}${ctxObj.isUrgent ? ' <strong>Urgency flag detected in context — delay cost is multiplied by strategic dependencies.</strong>' : ''}
+      </div>
+    </section>`;
+}
+
+function renderForecastSection(d, analysis) {
+  const fc = analysis.forecast;
+  const deadline = new Date(DEADLINE).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  return `
+    <section class="sec" id="s-forecast">
+      <div class="sec-eyebrow">Forecasting Engine</div>
+      <div class="sec-title">Hiring Outcome Projections</div>
+      <div class="sec-desc">Where the pipeline is headed and what it takes to change the outcome.</div>
+      <div class="forecast-row">
+        <div class="forecast-card">
+          <div class="fc-label">Projected Hires by Deadline</div>
+          <div class="fc-big" style="color:${fc.onTrack?'var(--green)':fc.hired+Math.round(fc.avgH*(fc.dl/7))>=TARGET*0.8?'var(--amber)':'var(--amber)'}">~${fc.hired + Math.round(fc.avgH * (fc.dl / 7))}</div>
+          <div class="fc-sub">
+            At current pace of <strong>${fc.avgH.toFixed(1)}/wk</strong> by ${deadline}<br>
+            Goal: <strong>${TARGET} hires</strong> · ${fc.gap} still to go
+          </div>
+        </div>
+        <div class="forecast-card">
+          <div class="fc-label">Weekly Pace vs Goal</div>
+          <div class="fc-big" style="color:${fc.avgH >= BASE_VELOCITY ? 'var(--green)' : 'var(--amber)'}">${fc.avgH.toFixed(1)}<span style="font-size:16px;font-weight:500;color:var(--text2)">/wk</span></div>
+          <div class="fc-sub">
+            Goal: <strong>${BASE_VELOCITY}/wk</strong>${fc.avgH < BASE_VELOCITY ? ` · <strong>${(BASE_VELOCITY - fc.avgH).toFixed(1)}/wk</strong> to reach target pace` : ' · At or above target pace ✓'}
+          </div>
+        </div>
+      </div>
+      <div class="scenario-stack">
+        ${fc.scenarios.map(s => `
+          <div class="scenario-row">
+            <div class="scen-dot ${s.dot}"></div>
+            <div class="scen-label">${s.label}</div>
+            <div class="scen-val">~${s.hires} hires by ${deadline}</div>
+            <span class="scen-badge ${s.badge}">${s.badgeLabel}</span>
+          </div>
+        `).join('')}
+      </div>
+    </section>`;
+}
+
+function renderSimulationsSection(d, analysis, ctxObj) {
+  const sims = analysis.sims;
+  return `
+    <section class="sec" id="s-simulations">
+      <div class="sec-eyebrow">Simulation Lab</div>
+      <div class="sec-title">What-If Scenario Analysis</div>
+      <div class="sec-desc">Model the impact of specific interventions before committing resources. Click any scenario to expand the analysis.</div>
+      <div class="sim-grid">
+        ${sims.map(s => `
+          <div class="sim-card" id="sim-${s.id}" onclick="toggleSim('${s.id}')">
+            <div class="sim-top">
+              <div class="sim-icon">${s.icon}</div>
+              <div>
+                <div class="sim-title">${s.title}</div>
+                <div class="sim-assumption">${s.assumption}</div>
+              </div>
+              <div class="sim-verdict ${s.verdict}">${s.verdictLabel}</div>
+            </div>
+            <div class="sim-body">
+              <div class="sim-row"><div class="sim-row-label">Expected impact</div><div class="sim-row-val">${s.impact}</div></div>
+              <div class="sim-row"><div class="sim-row-label">Effort</div><div class="sim-row-val">${s.effort}</div></div>
+              <div class="sim-row"><div class="sim-row-label">Timeline</div><div class="sim-row-val">${s.timeline}</div></div>
+              <div class="sim-row"><div class="sim-row-label">Confidence</div><div class="sim-row-val">${s.confidence}</div></div>
+              <div class="sim-row"><div class="sim-row-label">Trade-off</div><div class="sim-row-val">${s.tradeoff}</div></div>
+              <div class="sim-constraint"><div class="sim-constraint-label">Constraint Analysis</div>${s.constraint}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`;
+}
+
+function renderRecsSection(analysis, ctxObj) {
+  const { p0, p1, p2 } = analysis.recs;
+
+  function recHtml(r, cls) {
+    return `
+      <div class="rec-card ${cls}">
+        <div class="rec-top">
+          <div class="rec-title">${r.title}</div>
+          <div class="rec-tags">
+            ${r.tags.includes('urgent')      ? '<span class="rec-tag urgent">Urgent</span>'      : ''}
+            ${r.tags.includes('high-impact') ? '<span class="rec-tag high-impact">High Impact</span>' : ''}
+          </div>
+        </div>
+        <div class="rec-rationale">${r.rationale}</div>
+        <div class="rec-metrics">
+          <div class="rec-metric">Expected: <strong>${r.impact}</strong></div>
+          <div class="rec-metric">Effort: <strong>${r.effort}</strong></div>
+          <div class="rec-metric">Timeline: <strong>${r.urgency}</strong></div>
+          <div class="rec-metric">Confidence: <strong>${r.confidence}</strong></div>
+        </div>
+      </div>`;
+  }
+
+  const contextNote = ctxObj.raw ? `
+    <div class="insight-note green" style="margin-bottom:20px">
+      <div class="in-label">Context applied</div>
+      Recommendations reflect your additional context${ctxObj.gobActive?' (Get on Board already active)':''}${ctxObj.referralActive?' (Referral program running)':''}${ctxObj.hasLinkedIn?' (LinkedIn Ads data incorporated)':''}${ctxObj.isUrgent?' (Urgency flag detected — P0 actions prioritized)':''}.
+    </div>` : '';
+
+  return `
+    <section class="sec" id="s-recs">
+      <div class="sec-eyebrow">Strategic Recommendations</div>
+      <div class="sec-title">Action Plan — Prioritized by Impact</div>
+      <div class="sec-desc">Highly opinionated, quantified recommendations ordered by urgency and expected ROI. Not generic advice.</div>
+      ${contextNote}
+      ${p0.length ? `
+        <div class="rec-group">
+          <div class="rec-group-label rgl-p0">⚡ P0 — Act This Week</div>
+          <div class="rec-stack">${p0.map(r => recHtml(r, 'p0')).join('')}</div>
+        </div>` : ''}
+      ${p1.length ? `
+        <div class="rec-group">
+          <div class="rec-group-label rgl-p1">📅 P1 — 2–4 Weeks</div>
+          <div class="rec-stack">${p1.map(r => recHtml(r, 'p1')).join('')}</div>
+        </div>` : ''}
+      ${p2.length ? `
+        <div class="rec-group">
+          <div class="rec-group-label rgl-p2">🎯 P2 — Strategic (1–3 Months)</div>
+          <div class="rec-stack">${p2.map(r => recHtml(r, 'p2')).join('')}</div>
+        </div>` : ''}
+    </section>`;
+}
+
+// ─── Context Gap ───────────────────────────────────────────────────────────
+function renderContextGap(gaps) {
+  if (!gaps.length) return;
+  $('contextGapPanel').style.display = 'block';
+  $('gapQuestions').innerHTML = gaps.map(q => `
+    <div class="gap-q">
+      <div class="gap-q-label">${q.label}</div>
+      <input class="gap-q-input" id="${q.id}" placeholder="${q.placeholder}" title="${q.hint}" />
+    </div>
+  `).join('');
+}
+
+function applyGapAnswers() {
+  const liSpend = $('gap-li-spend')?.value;
+  const recs    = $('gap-recruiters')?.value;
+  const urgency = $('gap-urgency')?.value;
+  let extra = [];
+  if (liSpend) extra.push(`LinkedIn Ads: $${liSpend} spent`);
+  if (recs)    extra.push(`${recs} recruiters on this pipeline`);
+  if (urgency) extra.push(urgency);
+  if (extra.length) {
+    window._ctxAppended = (window._ctxAppended || '') + '\n' + extra.join('. ');
+    $('contextGapPanel').style.display = 'none';
+    renderDashboard(window._lastData, window._ctxAppended);
+  }
+}
+
+// ─── Main Render ──────────────────────────────────────────────────────────
+function renderDashboard(d, ctx) {
+  window._lastData = d;
+  window._ctxAppended = ctx;
+
+  const ctxObj  = parseCtx(ctx);
+  const health  = computeHealthScore(d, ctxObj);
+  const bot     = findBottleneck(d);
+  const funnelDiag = diagnoseFunnel(d);
+  const channels   = analyzeChannels(d);
+  const econ    = computeEconomics(d, ctxObj);
+  const forecast = computeForecast(d, ctxObj);
+  const sims    = generateSimulations(d, ctxObj);
+  const recs    = generateRecs(d, ctxObj);
+
+  const analysis = { health, bot, funnelDiag, channels, econ, forecast, sims, recs };
+
+  $('dashContent').innerHTML = [
+    renderCommandCenter(d, analysis, ctxObj),
+    renderFunnelSection(d, analysis),
+    renderChannelSection(d, analysis),
+    renderEconomicsSection(d, analysis, ctxObj),
+    renderForecastSection(d, analysis),
+    renderSimulationsSection(d, analysis, ctxObj),
+    renderRecsSection(analysis, ctxObj),
+  ].join('');
+
+  // Context gap questions
+  const gaps = detectContextGaps(d, ctxObj);
+  if (gaps.length > 0 && !ctxObj.raw) {
+    renderContextGap(gaps);
+  } else {
+    $('contextGapPanel').style.display = 'none';
+  }
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.sc-prog-fill, .f-fill, .src-bar-fill, .inv-bar').forEach(el => {
+      const w = el.style.width; el.style.width = '0';
+      setTimeout(() => { el.style.width = w; }, 50);
+    });
+  }, 100);
+}
+
+// ─── App Flow ──────────────────────────────────────────────────────────────
+const STATUS_MESSAGES = [
+  'Connecting to Ashby ATS...',
+  'Fetching pipeline data...',
+  'Analyzing funnel conversion rates...',
+  'Detecting bottlenecks...',
+  'Computing hiring economics...',
+  'Building forecast model...',
+  'Running scenario simulations...',
+  'Generating strategic recommendations...',
+];
+
+let _statusTimer = null;
+function startStatusMessages() {
+  let i = 0;
+  $('lpStatus').textContent = STATUS_MESSAGES[0];
+  _statusTimer = setInterval(() => {
+    i = (i + 1) % STATUS_MESSAGES.length;
+    $('lpStatus').textContent = STATUS_MESSAGES[i];
+  }, 1600);
+}
+function stopStatusMessages() {
+  if (_statusTimer) { clearInterval(_statusTimer); _statusTimer = null; }
+}
+
+async function startAnalysis() {
+  const btn = $('lpBtn') || $('dhRefresh');
+  const ctx = $('lpCtx')?.value?.trim() || window._ctxAppended || '';
+
+  $('lpLoading') && ($('lpLoading').style.display = 'flex');
+  $('lpError')   && ($('lpError').style.display   = 'none');
+  $('lpBtn')     && ($('lpBtn').disabled = true);
+  $('dhRefresh') && ($('dhRefresh').disabled = true);
+  startStatusMessages();
+
+  try {
+    const res  = await fetch(API_URL);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+    stopStatusMessages();
+
+    // Switch to dashboard view
+    $('landingPage').style.display = 'none';
+    $('dashPage').style.display    = 'block';
+
+    const ts = formatTs(data.generatedAt || new Date().toISOString());
+    $('dhTs').textContent      = `Updated ${ts}`;
+    $('footerTs').textContent  = `Generated ${ts}`;
+
+    renderDashboard(data, ctx);
+
+  } catch (err) {
+    stopStatusMessages();
+    $('lpLoading') && ($('lpLoading').style.display = 'none');
+    if ($('lpError')) {
+      $('lpError').style.display = 'block';
+      $('lpError').textContent = `Error: ${err.message}`;
+    }
+  } finally {
+    $('lpBtn')     && ($('lpBtn').disabled = false);
+    $('dhRefresh') && ($('dhRefresh').disabled = false);
+  }
+}
+
+function toggleLpContext() {
+  const ta = $('lpCtx');
+  if (!ta) return;
+  const hidden = ta.style.display === 'none' || !ta.style.display || ta.hidden;
+  ta.style.display = hidden ? 'block' : 'none';
+  if (hidden) ta.focus();
+}
+
+function toggleSim(id) {
+  const card = $('sim-' + id);
+  if (card) card.classList.toggle('open');
+}
+</script>
+</body>
+</html>

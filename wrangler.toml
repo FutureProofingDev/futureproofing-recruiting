@@ -1,0 +1,11 @@
+name = "futureproofing-recruiting"
+compatibility_date = "2024-01-01"
+
+# Cloudflare Pages config
+pages_build_output_dir = "public"
+
+# Set the Ashby API key secret (run from project root):
+#   wrangler secret put ASHBY_API_KEY --env production
+#
+# Pages Functions live in /functions and are auto-deployed with the Pages project.
+# The /api/report endpoint is handled by functions/api/report.js

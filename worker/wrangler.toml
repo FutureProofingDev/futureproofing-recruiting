@@ -1,0 +1,8 @@
+name = "futureproofing-worker"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# Set API key secret:
+#   wrangler secret put ASHBY_API_KEY
+# Then deploy:
+#   wrangler deploy
