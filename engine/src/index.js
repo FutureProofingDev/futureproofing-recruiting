@@ -82,7 +82,7 @@ async function regenerateCandidate(env, id) {
     currentInterviewStage: { title: snapshot?.payload?.currentStage || candidate.current_stage },
   };
 
-  const instance = await env.EVAL_WORKFLOW.create({ params: { application, pipelineKey: candidate.pipeline_key } });
+  const instance = await env.EVAL_WORKFLOW.create({ params: { application, pipelineKey: candidate.pipeline_key, force: true } });
   return { instanceId: instance.id };
 }
 

@@ -49,8 +49,12 @@ function transcriptsForStage(dossier, stageTitle) {
 
 // Step 2: diff the dossier's evidence against what's already stored to find
 // which stage evaluations are missing or stale (new data, or a bumped
-// prompt version). Read-only — does not call the LLM.
-export async function determineStageWork(env, candidateId, pipelineKey, dossier) {
+// prompt version). Read-only — does not call the LLM. `force` (from a
+// manual "regenerate" request) always treats every stage as stale, since the
+// whole point of a manual regenerate is to re-run regardless of whether the
+// engine thinks anything changed (e.g. the previous run produced a bad
+// output for reasons the hash/version check can't see).
+export async function determineStageWork(env, candidateId, pipelineKey, dossier, force = false) {
   const pipeline = getPipeline(pipelineKey);
   const existing = await getLatestStageEvaluations(env.DB, candidateId);
   const existingByKey = new Map(existing.map(e => [e.stage_key, e]));
@@ -83,7 +87,7 @@ export async function determineStageWork(env, candidateId, pipelineKey, dossier)
     const inputHash = await hashJson(c.evidence);
     const promptVersion = getStagePrompt(c.evalType).version;
     const prior = existingByKey.get(c.stageKey);
-    const isStale = !prior || prior.input_hash !== inputHash || prior.prompt_version !== promptVersion;
+    const isStale = force || !prior || prior.input_hash !== inputHash || prior.prompt_version !== promptVersion;
     if (isStale) work.push({ ...c, inputHash, promptVersion });
   }
   return work;
@@ -115,8 +119,9 @@ export async function generateAndStoreStageEvaluation(env, candidateId, pipeline
 
 // Step 4: once all currently-available stage evaluations are up to date,
 // synthesize (or refresh) the Final Candidate Summary. Skips the LLM call
-// entirely if nothing has changed since the last synthesis.
-export async function generateAndStoreSynthesis(env, candidateId, pipelineKey, dossier) {
+// entirely if nothing has changed since the last synthesis — unless `force`
+// (a manual regenerate) says to run regardless.
+export async function generateAndStoreSynthesis(env, candidateId, pipelineKey, dossier, force = false) {
   const pipeline = getPipeline(pipelineKey);
   const stageEvaluations = await getLatestStageEvaluations(env.DB, candidateId);
   if (!stageEvaluations.length) return null;
@@ -127,7 +132,7 @@ export async function generateAndStoreSynthesis(env, candidateId, pipelineKey, d
   );
 
   const prior = await getLatestFinalSummary(env.DB, candidateId);
-  const isStale = !prior || prior.input_hash !== inputHash || prior.prompt_version !== SYNTHESIS_PROMPT.version;
+  const isStale = force || !prior || prior.input_hash !== inputHash || prior.prompt_version !== SYNTHESIS_PROMPT.version;
   if (!isStale) return { id: prior.id, skipped: true };
 
   const tool = buildSynthesisTool(competencyKeys);

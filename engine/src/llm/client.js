@@ -55,7 +55,25 @@ export async function generateStructured(env, { system, prompt, tool, model, ret
 
     const data = await res.json();
     const toolUse = (data.content || []).find(b => b.type === 'tool_use');
-    if (!toolUse) throw new Error('Anthropic response did not include the expected tool_use block');
+    if (!toolUse) {
+      if (attempt === retries - 1) throw new Error('Anthropic response did not include the expected tool_use block');
+      continue;
+    }
+
+    // Anthropic tool-use is not hard-validated against the schema server-side —
+    // the model can still omit a `required` field. Treat that as a retryable
+    // failure rather than silently shipping an incomplete summary.
+    const missing = missingRequiredFields(tool.input_schema, toolUse.input);
+    if (missing.length) {
+      if (attempt === retries - 1) throw new Error(`Anthropic tool_use response missing required field(s): ${missing.join(', ')}`);
+      continue;
+    }
+
     return toolUse.input;
   }
+}
+
+function missingRequiredFields(schema, input) {
+  const required = (schema && schema.required) || [];
+  return required.filter(key => input == null || input[key] === undefined);
 }
