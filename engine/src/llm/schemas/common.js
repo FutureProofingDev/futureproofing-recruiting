@@ -26,3 +26,33 @@ export function scoreItemSchema(competencyKeys) {
 }
 
 export const stringListSchema = { type: 'array', items: { type: 'string' } };
+
+// Attribution-required variants, used by the synthesis step only (it has
+// access to the real evaluator names + form field titles via
+// dossier.feedbackSimplified — see llm/prompts/synthesis.js). Kept separate
+// from evidenceItemSchema/scoreItemSchema above so the per-stage evaluation
+// prompts/schemas are unaffected.
+export const attributedTextSchema = {
+  type: 'object',
+  properties: {
+    text: { type: 'string', description: 'One short, single idea.' },
+    evaluatorName: { type: 'string', description: 'The real name of who said this (e.g. "Rafael Rovira"), taken from the evidence. Never a generic placeholder like "an evaluator" or "the interviewer".' },
+    context: { type: 'string', description: 'The exact form field/section this came from, e.g. "Potential Concerns", "Candidate\'s Strengths", "Notes".' },
+  },
+  required: ['text', 'evaluatorName', 'context'],
+};
+
+export function attributedScoreItemSchema(competencyKeys) {
+  return {
+    type: 'object',
+    properties: {
+      competency: { type: 'string', enum: competencyKeys },
+      score: { type: 'integer', minimum: 1, maximum: 5 },
+      confidence: { type: 'string', enum: ['low', 'medium', 'high'] },
+      reasoning: { type: 'string' },
+      evaluatorName: { type: 'string', description: 'Who provided the strongest evidence for this score, e.g. "Rafael Rovira", or "Rafael Rovira & Gabe Murillo" if genuinely aggregated across multiple. Never generic.' },
+      context: { type: 'string', description: 'The section/field this evidence came from, e.g. "Potential Concerns".' },
+    },
+    required: ['competency', 'score', 'confidence', 'reasoning', 'evaluatorName', 'context'],
+  };
+}

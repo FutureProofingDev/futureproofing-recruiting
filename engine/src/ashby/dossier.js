@@ -12,6 +12,7 @@ import {
   extractTechAssessmentNotes,
   noteText,
 } from './collectors.js';
+import { simplifyFeedback } from './feedbackFormat.js';
 import { hashJson } from '../util/hash.js';
 
 // Registry of data-source collectors. Adding a future source = adding one
@@ -79,6 +80,10 @@ export async function buildDossier(apiKey, application) {
     resume: raw.resume,
     linkedInUrl,
     feedback: raw.feedback,
+    // Clean, attributable version of the same feedback (real evaluator name
+    // + real field/section title) — used by the synthesis prompt so it can
+    // cite who said what instead of summarizing anonymously.
+    feedbackSimplified: (raw.feedback || []).map(simplifyFeedback),
     techAssessment,
     generalNotes,
     interviews: raw.interviews,

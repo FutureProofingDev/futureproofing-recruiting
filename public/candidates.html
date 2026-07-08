@@ -56,18 +56,28 @@ button{font-family:inherit;cursor:pointer}
 .ctx .meta{font-size:13px;color:#E6DEF7;margin-top:8px;display:flex;gap:16px;flex-wrap:wrap}
 .ctx .meta span{display:inline-flex;align-items:center;gap:5px}
 .ctx-score{text-align:right}
-.rec-badge{display:inline-block;font-size:19px;font-weight:800;letter-spacing:-.2px;padding:8px 16px;border-radius:12px;line-height:1.1}
-.rec-badge.proceed{background:rgba(34,197,94,.22);color:#bbf7d0}
-.rec-badge.proceed_with_caution{background:rgba(245,158,11,.24);color:#fde68a}
-.rec-badge.reject{background:rgba(220,38,38,.26);color:#fecaca}
-.rec-badge.none{background:rgba(255,255,255,.12);color:#e6def7}
+.ctx-score .conf-lbl{font-size:13px;color:#E6DEF7;font-weight:700}
 .ctx-score .lbl{font-size:11px;color:var(--indigo-light);text-transform:uppercase;letter-spacing:.6px;margin-top:6px}
+
+.exec-card{background:linear-gradient(135deg,#FBF5FF,#EEF2FF);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px}
+.exec-label{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--blue-purple);font-weight:800;margin-bottom:8px}
+.exec-text{font-size:15.5px;color:var(--ink);font-weight:600;line-height:1.5}
 
 .sec-title{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--blue-purple);font-weight:700;margin:0 0 11px;display:flex;align-items:center;justify-content:space-between}
 .card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
 @media(max-width:940px){.grid3{grid-template-columns:1fr}}
 .chart-empty{font-size:13.5px;color:var(--muted);padding:18px;text-align:center;background:var(--lavender);border-radius:10px}
+
+/* Collapsed-by-default accordion sections (Summary, Scorecard, Flags, Timeline) */
+details.accordion{background:var(--white);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+details.accordion>summary{list-style:none;cursor:pointer;padding:16px 20px;display:flex;align-items:center;gap:11px;font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--blue-purple);font-weight:700}
+details.accordion>summary::-webkit-details-marker{display:none}
+details.accordion>summary .chev{display:inline-block;font-size:11px;color:var(--electric-purple);transition:transform .15s ease;flex:0 0 auto}
+details.accordion[open]>summary .chev{transform:rotate(90deg)}
+details.accordion>summary .acc-teaser{text-transform:none;letter-spacing:0;color:var(--muted);font-weight:600;font-size:12.5px;margin-left:auto;text-align:right}
+details.accordion .acc-body{padding:0 20px 20px}
+details.accordion[open]>summary{border-bottom:1px solid var(--line)}
 
 .el-row{display:flex;align-items:center;gap:14px;margin-bottom:10px}
 .el-row:last-child{margin-bottom:0}
@@ -79,10 +89,17 @@ button{font-family:inherit;cursor:pointer}
 .el-conf{flex:0 0 60px;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--muted);text-align:right}
 .el-reason{font-size:12px;color:var(--muted);margin:2px 0 12px 0;padding-left:2px}
 
+.attrib{font-size:11px;color:var(--muted);margin-top:2px;font-style:italic}
+
+.bullet-list{list-style:none}
+.bullet-list li{font-size:13.5px;color:var(--ink-soft);padding:9px 0;border-bottom:1px dashed var(--line)}
+.bullet-list li:last-child{border-bottom:none}
+
 .flaglist{list-style:none}
 .flaglist li{font-size:13px;color:var(--ink-soft);padding:8px 0;border-bottom:1px dashed var(--line);display:flex;gap:8px;align-items:flex-start}
 .flaglist li:last-child{border-bottom:none}
 .flaglist li i{margin-top:2px;flex:0 0 auto}
+.flaglist li .flag-body{min-width:0}
 .flag-green i{color:var(--ok)}.flag-yellow i{color:var(--mixed)}.flag-red i{color:var(--flag)}
 
 .timeline{list-style:none;position:relative}
@@ -158,13 +175,28 @@ function scorecardBars(scorecard){
       <div class="el-bar-track"><div class="el-bar-fill ${c.score<3?'low':''}" style="width:${p}%"></div></div>
       <div class="el-score">${c.score}/5</div>
       <div class="el-conf">${esc(c.confidence||'')}</div>
-    </div><div class="el-reason">${esc(c.reasoning||'')}</div>`;
+    </div><div class="el-reason">${esc(c.reasoning||'')}<div class="attrib">— ${esc(c.evaluatorName||'')}${c.context?', '+esc(c.context):''}</div></div>`;
   }).join('');
 }
 
+// Compact one-line teaser for the collapsed Scorecard summary row.
+function scorecardTeaser(scorecard){
+  if(!scorecard||!scorecard.length) return 'Not generated yet';
+  return scorecard.map(c=>`${titleCase(c.competency)} ${c.score}/5`).join(' · ');
+}
+
+// items are {text, evaluatorName, context} objects (attributed).
 function flagList(items, cls, icon){
   if(!items||!items.length) return '<div class="chart-empty">None noted.</div>';
-  return `<ul class="flaglist">${items.map(f=>`<li class="${cls}"><i class="ti ${icon}"></i>${esc(f)}</li>`).join('')}</ul>`;
+  return `<ul class="flaglist">${items.map(f=>`<li class="${cls}"><i class="ti ${icon}"></i>
+    <div class="flag-body">${esc(f.text)}<div class="attrib">— ${esc(f.evaluatorName||'')}${f.context?', '+esc(f.context):''}</div></div>
+  </li>`).join('')}</ul>`;
+}
+
+// candidateSummaryBullets: {text, evaluatorName, context} objects (attributed).
+function bulletList(items){
+  if(!items||!items.length) return '<div class="chart-empty">No summary bullets generated yet.</div>';
+  return `<ul class="bullet-list">${items.map(b=>`<li>${esc(b.text)}<div class="attrib">— ${esc(b.evaluatorName||'')}${b.context?', '+esc(b.context):''}</div></li>`).join('')}</ul>`;
 }
 
 function timeline(items){
@@ -234,11 +266,13 @@ function renderDetail(){
   const out=fs?fs.output:null;
   const rec=fs?fs.recommendation:'none';
 
-  const summaryCard = out ? `<div class="card">
-      <div class="sec-title">Candidate Summary</div>
-      <p style="font-size:14px;color:var(--ink-soft);margin-bottom:10px">${esc(out.candidateSummary)}</p>
-      <p style="font-size:13px;color:var(--muted)"><i class="ti ti-info-circle"></i> ${esc(out.currentStatus)}</p>
-    </div>` : `<div class="card"><div class="sec-title">Candidate Summary</div><div class="chart-empty">No Final Candidate Summary yet — it's generated once at least one stage evaluation exists.</div></div>`;
+  const execCard = out ? `<div class="exec-card">
+      <div class="exec-label">Executive Summary</div>
+      <div class="exec-text">${esc(out.executiveSummary)}</div>
+    </div>` : `<div class="exec-card"><div class="exec-label">Executive Summary</div><div class="chart-empty">No Final Candidate Summary yet — it's generated once at least one stage evaluation exists.</div></div>`;
+
+  const nGreen=(out?.greenFlags||[]).length, nYellow=(out?.yellowFlags||[]).length, nRed=(out?.redFlags||[]).length;
+  const nStages=(out?.evidenceTimeline||[]).length;
 
   pane.innerHTML = `
     <div class="ctx">
@@ -252,28 +286,41 @@ function renderDetail(){
         </div>
       </div>
       <div class="ctx-score">
-        <div class="rec-badge ${rec}">${recLabel(rec)}</div>
-        <div class="lbl">${fs?('Confidence: '+esc(fs.confidence||'—')):''}</div>
+        <div class="conf-lbl">${fs?('Confidence: '+esc(fs.confidence||'—')):''}</div>
       </div>
     </div>
 
-    ${summaryCard}
+    ${execCard}
 
-    <div class="card">
-      <div class="sec-title">Scorecard</div>
-      ${scorecardBars(out?out.scorecard:null)}
-    </div>
+    <details class="accordion">
+      <summary><span class="chev">▶</span> Summary <span class="acc-teaser">${(out?.candidateSummaryBullets||[]).length} points</span></summary>
+      <div class="acc-body">${bulletList(out?out.candidateSummaryBullets:null)}</div>
+    </details>
 
-    <div class="grid3">
-      <div class="card"><div class="sec-title">Green Flags</div>${flagList(out?out.greenFlags:null,'flag-green','ti-circle-check')}</div>
-      <div class="card"><div class="sec-title">Yellow Flags</div>${flagList(out?out.yellowFlags:null,'flag-yellow','ti-alert-triangle')}</div>
-      <div class="card"><div class="sec-title">Red Flags</div>${flagList(out?out.redFlags:null,'flag-red','ti-flag-3')}</div>
-    </div>
+    <details class="accordion">
+      <summary><span class="chev">▶</span> Scorecard <span class="acc-teaser">${esc(scorecardTeaser(out?out.scorecard:null))}</span></summary>
+      <div class="acc-body">${scorecardBars(out?out.scorecard:null)}</div>
+    </details>
 
-    <div class="card">
-      <div class="sec-title">Evidence Timeline</div>
-      ${timeline(out?out.evidenceTimeline:null)}
-    </div>
+    <details class="accordion">
+      <summary><span class="chev">▶</span> Green Flags <span class="acc-teaser">${nGreen}</span></summary>
+      <div class="acc-body">${flagList(out?out.greenFlags:null,'flag-green','ti-circle-check')}</div>
+    </details>
+
+    <details class="accordion">
+      <summary><span class="chev">▶</span> Yellow Flags <span class="acc-teaser">${nYellow}</span></summary>
+      <div class="acc-body">${flagList(out?out.yellowFlags:null,'flag-yellow','ti-alert-triangle')}</div>
+    </details>
+
+    <details class="accordion">
+      <summary><span class="chev">▶</span> Red Flags <span class="acc-teaser">${nRed}</span></summary>
+      <div class="acc-body">${flagList(out?out.redFlags:null,'flag-red','ti-flag-3')}</div>
+    </details>
+
+    <details class="accordion">
+      <summary><span class="chev">▶</span> Evidence Timeline <span class="acc-teaser">${nStages} stage${nStages===1?'':'s'}</span></summary>
+      <div class="acc-body">${timeline(out?out.evidenceTimeline:null)}</div>
+    </details>
 
     <div class="card">
       <div class="sec-title">Open Questions for Jess</div>

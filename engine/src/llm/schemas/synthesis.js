@@ -1,7 +1,10 @@
-import { scoreItemSchema, stringListSchema } from './common.js';
+import { attributedTextSchema, attributedScoreItemSchema } from './common.js';
 
 // Final Candidate Summary — internal decision-making document, not
-// client-facing. Mirrors every section requested in the brief.
+// client-facing. Structured for a fast top-to-bottom read (executive
+// summary + open questions + final call always visible) with attributed,
+// citable detail underneath (bullets/flags/scorecard each name who said it
+// and in which part of the scorecard/notes).
 export function buildSynthesisTool(competencyKeys) {
   return {
     name: 'record_final_candidate_summary',
@@ -9,13 +12,26 @@ export function buildSynthesisTool(competencyKeys) {
     input_schema: {
       type: 'object',
       properties: {
-        candidateSummary: { type: 'string', description: 'What we already know about this candidate, in plain terms.' },
-        overallRecommendation: { type: 'string' },
+        executiveSummary: {
+          type: 'string',
+          description: '2-3 sentences, always shown without expanding anything: the verdict, the confidence level, and the single main reason. Must stand alone — a reader should not need any other section to understand the headline.',
+        },
+        candidateSummaryBullets: {
+          type: 'array',
+          minItems: 4,
+          maxItems: 6,
+          description: '4-6 short, single-idea supporting bullets. Do not restate the verdict from executiveSummary — add the specific facts that back it up.',
+          items: attributedTextSchema,
+        },
         confidenceLevel: { type: 'string', enum: ['low', 'medium', 'high'] },
-        scorecard: { type: 'array', items: scoreItemSchema(competencyKeys), description: 'One entry per competency.' },
-        greenFlags: stringListSchema,
-        yellowFlags: stringListSchema,
-        redFlags: stringListSchema,
+        scorecard: {
+          type: 'array',
+          description: 'One entry per competency.',
+          items: attributedScoreItemSchema(competencyKeys),
+        },
+        greenFlags: { type: 'array', items: attributedTextSchema },
+        yellowFlags: { type: 'array', items: attributedTextSchema },
+        redFlags: { type: 'array', items: attributedTextSchema },
         evidenceTimeline: {
           type: 'array',
           description: 'How the candidate evolved, one entry per completed stage in chronological order.',
@@ -29,18 +45,20 @@ export function buildSynthesisTool(competencyKeys) {
             required: ['stage', 'keyFindings', 'whatChanged'],
           },
         },
-        currentStatus: { type: 'string', description: 'One-line summary of where things stand right now, going into "Chat with Jess".' },
         openQuestions: {
           type: 'array',
           description: 'Only unresolved questions Jess still needs to answer during the interview.',
           items: { type: 'string' },
         },
         finalRecommendation: { type: 'string', enum: ['proceed', 'proceed_with_caution', 'reject'] },
-        finalRecommendationReasoning: { type: 'string' },
+        finalRecommendationReasoning: {
+          type: 'string',
+          description: 'Must add something not already said in executiveSummary or the bullets — e.g. the specific risk/trade-off driving the recommendation.',
+        },
       },
       required: [
-        'candidateSummary', 'overallRecommendation', 'confidenceLevel', 'scorecard',
-        'greenFlags', 'yellowFlags', 'redFlags', 'evidenceTimeline', 'currentStatus',
+        'executiveSummary', 'candidateSummaryBullets', 'confidenceLevel', 'scorecard',
+        'greenFlags', 'yellowFlags', 'redFlags', 'evidenceTimeline',
         'openQuestions', 'finalRecommendation', 'finalRecommendationReasoning',
       ],
     },
