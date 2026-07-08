@@ -1,6 +1,6 @@
 import { BASE_SYSTEM_PROMPT, candidateContextBlock } from './shared.js';
 
-export const version = 'synthesis.v3';
+export const version = 'synthesis.v4';
 
 export function buildPrompt(dossier, competencyKeys, { stageEvaluations }) {
   const system = `${BASE_SYSTEM_PROMPT}
@@ -38,6 +38,10 @@ Formatting rules (follow all of them):
    Y") rather than as a warning or a reason for alarm. This is genuine, specific, constructive framing, not
    euphemism — still name the real gap, just describe it as something addressable rather than a red flag on
    the candidate as a person.
+10. Never write the literal phrase "proceed with caution" (quoted or not), or any other verbatim restatement
+    of the internal recommendation label, inside executiveSummary or finalRecommendationReasoning — that label
+    is for the UI's badge, not for prose a reader sees. Describe the situation in plain language instead (e.g.
+    "a bet-on-trajectory candidate" is fine and encouraged; quoting the label itself is not).
 
 Only state what the feedback below actually supports — never invent a quote, a name, or an outcome.`;
 
