@@ -32,6 +32,11 @@ export function buildSynthesisTool(competencyKeys) {
         greenFlags: { type: 'array', items: attributedTextSchema },
         yellowFlags: { type: 'array', items: attributedTextSchema },
         redFlags: { type: 'array', items: attributedTextSchema },
+        employmentStabilityNotes: {
+          type: 'array',
+          description: 'Job tenure/stability signals — ONLY if explicitly evidenced (e.g. current employer mentioned, notice period, dual employment, history of role changes described). Empty array if the material genuinely says nothing about this — never guess or infer stability from role/seniority alone.',
+          items: attributedTextSchema,
+        },
         evidenceTimeline: {
           type: 'array',
           description: 'How the candidate evolved, one entry per completed stage in chronological order.',
@@ -58,7 +63,7 @@ export function buildSynthesisTool(competencyKeys) {
       },
       required: [
         'executiveSummary', 'candidateSummaryBullets', 'confidenceLevel', 'scorecard',
-        'greenFlags', 'yellowFlags', 'redFlags', 'evidenceTimeline',
+        'greenFlags', 'yellowFlags', 'redFlags', 'employmentStabilityNotes', 'evidenceTimeline',
         'openQuestions', 'finalRecommendation', 'finalRecommendationReasoning',
       ],
     },

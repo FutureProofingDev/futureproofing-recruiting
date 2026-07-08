@@ -116,13 +116,12 @@ details.accordion[open]>summary{border-bottom:1px solid var(--line)}
 .qlist li:last-child{border-bottom:none}
 .qlist li i{color:var(--electric-purple);margin-top:2px;flex:0 0 auto}
 
-.rec-final{border-radius:14px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
-.rec-final.proceed{background:#dcfce7;border:1px solid #86efac}
-.rec-final.proceed_with_caution{background:#fef3c7;border:1px solid #fde68a}
-.rec-final.reject{background:#fee2e2;border:1px solid #fecaca}
-.rec-final .rf-txt{font-size:14px;color:var(--ink-soft);max-width:640px}
-.rec-final .rf-title{font-size:16px;font-weight:800;margin-bottom:4px}
-.rec-final.proceed .rf-title{color:#15803d}.rec-final.proceed_with_caution .rf-title{color:#b45309}.rec-final.reject .rf-title{color:#b91c1c}
+.rec-final{border-radius:10px;padding:14px 18px;background:var(--lavender);border-left:3px solid var(--line)}
+.rec-final.proceed{border-left-color:#86efac}
+.rec-final.proceed_with_caution{border-left-color:var(--indigo-light)}
+.rec-final.reject{border-left-color:#fca5a5}
+.rec-final .rf-txt{font-size:13.5px;color:var(--ink-soft);line-height:1.5}
+.rec-final .rf-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;color:var(--muted)}
 
 .regen-btn{background:var(--blue-purple);color:#fff;border:none;border-radius:11px;padding:10px 18px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
 .regen-btn:hover{background:var(--deep-violet)}
@@ -160,7 +159,7 @@ let LIST = [], selectedId = null, DETAIL = null;
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function initials(name){return (name||'?').split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
 function fmtDate(d){if(!d)return '—';const t=new Date(d);if(isNaN(t))return '—';return t.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
-function recLabel(r){return {proceed:'Proceed',proceed_with_caution:'Proceed with Caution',reject:'Reject'}[r]||'No summary yet';}
+function recLabel(r){return {proceed:'Proceed',proceed_with_caution:'Proceed — Partner with Senior Engineer',reject:'Not a Fit Right Now'}[r]||'No summary yet';}
 
 // Competency keys come back from the engine as config keys (e.g. "agentic_coding"),
 // not display labels — title-case them for the UI.
@@ -273,6 +272,7 @@ function renderDetail(){
 
   const nGreen=(out?.greenFlags||[]).length, nYellow=(out?.yellowFlags||[]).length, nRed=(out?.redFlags||[]).length;
   const nStages=(out?.evidenceTimeline||[]).length;
+  const nStability=(out?.employmentStabilityNotes||[]).length;
 
   pane.innerHTML = `
     <div class="ctx">
@@ -315,6 +315,11 @@ function renderDetail(){
     <details class="accordion">
       <summary><span class="chev">▶</span> Red Flags <span class="acc-teaser">${nRed}</span></summary>
       <div class="acc-body">${flagList(out?out.redFlags:null,'flag-red','ti-flag-3')}</div>
+    </details>
+
+    <details class="accordion">
+      <summary><span class="chev">▶</span> Job Tenure &amp; Stability <span class="acc-teaser">${nStability ? nStability+' note'+(nStability===1?'':'s') : 'No data'}</span></summary>
+      <div class="acc-body">${nStability ? bulletList(out.employmentStabilityNotes) : '<div class="chart-empty">Nothing in the scorecards/notes speaks to job tenure or stability for this candidate.</div>'}</div>
     </details>
 
     <details class="accordion">

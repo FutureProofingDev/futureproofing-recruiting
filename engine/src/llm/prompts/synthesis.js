@@ -1,6 +1,6 @@
 import { BASE_SYSTEM_PROMPT, candidateContextBlock } from './shared.js';
 
-export const version = 'synthesis.v2';
+export const version = 'synthesis.v3';
 
 export function buildPrompt(dossier, competencyKeys, { stageEvaluations }) {
   const system = `${BASE_SYSTEM_PROMPT}
@@ -29,6 +29,15 @@ Formatting rules (follow all of them):
 6. openQuestions: only genuinely unresolved questions — do not manufacture questions to fill a quota.
 7. finalRecommendationReasoning must add a new angle (a specific risk, trade-off, or what would resolve it),
    not restate executiveSummary.
+8. employmentStabilityNotes: only include an entry if the material explicitly says something about job
+   tenure/stability (current employer, notice period, dual employment, a described history of role changes).
+   Leave it an empty array if nothing is explicitly said — never infer stability or job-hopping risk from
+   role, seniority, or age.
+9. Tone: when the recommendation is anything other than a clean "proceed", frame it constructively — as a
+   development/support need (e.g. "would benefit from pairing with a senior engineer on X", "coachable gap in
+   Y") rather than as a warning or a reason for alarm. This is genuine, specific, constructive framing, not
+   euphemism — still name the real gap, just describe it as something addressable rather than a red flag on
+   the candidate as a person.
 
 Only state what the feedback below actually supports — never invent a quote, a name, or an outcome.`;
 
