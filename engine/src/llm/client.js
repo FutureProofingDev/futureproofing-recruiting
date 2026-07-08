@@ -6,15 +6,16 @@
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
 
-// Deterministic outputs matter more here than creativity: temperature 0.
-const DEFAULT_TEMPERATURE = 0;
 const DEFAULT_MAX_TOKENS = 4096;
 
+// Note: this model rejects an explicit `temperature` override ("temperature
+// is deprecated for this model") — discovered live in production. Determinism
+// here comes from forced tool-use + low-ambiguity prompts, not sampling
+// temperature.
 export async function generateStructured(env, { system, prompt, tool, model, retries = 3 }) {
   const body = {
     model: model || env.ANTHROPIC_MODEL,
     max_tokens: DEFAULT_MAX_TOKENS,
-    temperature: DEFAULT_TEMPERATURE,
     system,
     messages: [{ role: 'user', content: prompt }],
     tools: [tool],

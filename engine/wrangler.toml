@@ -9,7 +9,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "eval-engine-db"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "5f2e1af5-67ce-4838-9788-302a35757bfc"
 
 # ── Workflow: durable multi-step candidate evaluation pipeline ────────────────
 [[workflows]]
