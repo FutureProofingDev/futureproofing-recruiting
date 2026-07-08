@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FutureProofing · Onboarding & HR</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.1.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --tech-indigo:#4C1D95;--deep-violet:#7C3AED;--blue-purple:#6366F1;--electric-purple:#A855F7;
+  --indigo-light:#818CF8;--lavender:#F8F4FF;--ink:#0B0614;--ink-soft:#3A3450;--muted:#6B6480;
+  --line:#E6DEF7;--white:#fff;--ok:#16a34a;--mixed:#d97706;--flag:#dc2626;
+  --grad:linear-gradient(90deg,var(--blue-purple),var(--electric-purple));
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--lavender);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+.hidden{display:none!important}
+
+/* Top bar */
+.topbar{background:var(--ink);color:#fff}
+.topbar-inner{max-width:1240px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-trail{display:flex;gap:3px}
+.brand-trail i{width:5px;height:5px;background:var(--electric-purple);border-radius:1px;display:block}
+.brand-trail i:nth-child(2){opacity:.6}.brand-trail i:nth-child(3){opacity:.3}
+.brand-logo{font-weight:800;font-size:18px;letter-spacing:-.4px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.topbar-right{display:flex;align-items:center;gap:14px;font-size:13px}
+.topbar-track{color:#fff;font-weight:600}
+.refresh{display:inline-flex;align-items:center;gap:7px;background:rgba(129,140,248,.14);color:var(--indigo-light);border:1px solid rgba(129,140,248,.3);font-weight:600;padding:7px 14px;border-radius:20px;font-size:13px}
+.refresh:hover{background:rgba(129,140,248,.24)}
+.refresh i{font-size:15px}
+.refresh.spinning i{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Summary strip */
+.summary{max-width:1240px;margin:0 auto;padding:22px 24px 4px}
+.dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:13px}
+@media(max-width:900px){.dash-stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--white);border:1px solid var(--line);border-radius:13px;padding:15px 18px}
+.stat-l{font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.stat-v{font-size:25px;font-weight:800;color:var(--tech-indigo);letter-spacing:-.5px}
+.stat-s{font-size:12.5px;color:var(--muted);font-weight:600}
+
+/* Layout */
+.shell{max-width:1240px;margin:0 auto;display:flex;gap:0;min-height:calc(100vh - 170px)}
+.sidebar{flex:0 0 270px;border-right:1px solid var(--line);padding:20px 12px;background:#FBFAFF}
+.side-label{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--blue-purple);font-weight:700;margin:0 8px 12px}
+.person{display:flex;align-items:center;gap:11px;padding:11px 10px;border-radius:11px;cursor:pointer;margin-bottom:3px;transition:background .15s;border:none;background:none;width:100%;text-align:left}
+.person:hover{background:var(--lavender)}
+.person.active{background:linear-gradient(90deg,#EEF2FF,#FBF5FF);border-left:3px solid var(--blue-purple);padding-left:7px;box-shadow:0 1px 3px rgba(99,102,241,.08)}
+.av{width:34px;height:34px;border-radius:50%;background:#EEEDFE;color:var(--tech-indigo);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:0 0 auto}
+.person.active .av{background:var(--grad);color:#fff}
+.person .pinfo{min-width:0;flex:1}
+.person .pname{font-size:13.5px;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.person.active .pname{color:var(--tech-indigo);font-weight:700}
+.person .psub{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:1px}
+.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.dot.up{background:var(--ok)}.dot.flat{background:var(--muted)}.dot.down{background:var(--mixed)}
+
+.stage{flex:1;padding:26px 34px;min-width:0}
+@media(max-width:820px){.shell{flex-direction:column}.sidebar{flex:auto;border-right:none;border-bottom:1px solid var(--line)}.stage{padding:22px 18px}}
+
+/* Person header banner */
+.ctx{background:linear-gradient(135deg,#2a1958,var(--tech-indigo));color:#fff;border-radius:16px;padding:22px 24px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.ctx .who{font-size:12px;color:var(--indigo-light);font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-bottom:5px}
+.ctx .role{font-size:23px;font-weight:800;letter-spacing:-.4px}
+.ctx .meta{font-size:13px;color:#E6DEF7;margin-top:8px;display:flex;gap:16px;flex-wrap:wrap}
+.ctx .meta span{display:inline-flex;align-items:center;gap:5px}
+.ctx-score{text-align:right}
+.ai-ready{display:inline-block;font-size:19px;font-weight:800;letter-spacing:-.2px;padding:8px 16px;border-radius:12px;line-height:1.1}
+.ai-ready.ok{background:rgba(34,197,94,.22);color:#bbf7d0}
+.ai-ready.mid{background:rgba(245,158,11,.24);color:#fde68a}
+.ai-ready.low{background:rgba(168,85,247,.26);color:#e9d5ff}
+.ai-ready.none{background:rgba(255,255,255,.12);color:#e6def7}
+.ctx-score .lbl{font-size:11px;color:var(--indigo-light);text-transform:uppercase;letter-spacing:.6px;margin-top:6px}
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;margin-top:7px;padding:3px 9px;border-radius:20px}
+.delta.up{background:rgba(34,197,94,.22);color:#bbf7d0}
+.delta.down{background:rgba(217,119,6,.25);color:#fde68a}
+.delta.flat{background:rgba(255,255,255,.14);color:#e6def7}
+
+/* Section + cards */
+.sec-title{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--blue-purple);font-weight:700;margin:0 0 11px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:940px){.grid2{grid-template-columns:1fr}}
+
+/* Progress line chart */
+.chart-wrap{width:100%;overflow-x:auto}
+.chart-empty{font-size:13.5px;color:var(--muted);padding:18px;text-align:center;background:var(--lavender);border-radius:10px}
+
+/* Competency bars */
+.el-row{display:flex;align-items:center;gap:14px;margin-bottom:15px}
+.el-row:last-child{margin-bottom:0}
+.el-name{flex:0 0 240px;font-size:12.5px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.el-bar-track{flex:1;height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.el-bar-fill{height:100%;background:var(--grad);border-radius:6px;width:0;transition:width .8s ease}
+.el-bar-fill.low{background:linear-gradient(90deg,#f59e0b,#dc2626)}
+.el-score{flex:0 0 42px;text-align:right;font-weight:800;font-size:14.5px;color:var(--tech-indigo)}
+@media(max-width:560px){.el-name{flex-basis:110px}}
+
+/* Coaching */
+.coach{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--lavender)}
+.coach:last-child{margin-bottom:0}
+.coach .cn{font-size:14.5px;font-weight:700;color:var(--tech-indigo)}
+.coach .cs{font-size:12.5px;color:var(--muted);margin-top:2px}
+.badge{font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;white-space:nowrap}
+.badge.flag{background:#fee2e2;color:#b91c1c}.badge.mixed{background:#fef3c7;color:#b45309}.badge.strong{background:#dcfce7;color:#15803d}
+.coach-none{font-size:13.5px;color:var(--ink-soft);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;display:flex;gap:9px;align-items:center}
+.coach-none i{color:var(--ok);font-size:18px}
+
+/* Coaching preferences (self-assessment) */
+.coach-wants{display:flex;gap:11px;align-items:center;background:linear-gradient(135deg,#EEF2FF,#FBF5FF);border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin-bottom:18px}
+.coach-wants i{font-size:23px;color:var(--electric-purple);flex:0 0 auto}
+.coach-wants .cw-lbl{display:block;font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--blue-purple);font-weight:700;margin-bottom:1px}
+.coach-wants .cw-val{font-size:15px;font-weight:700;color:var(--tech-indigo)}
+.cf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.cf-cat h5{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--blue-purple);margin-bottom:10px}
+.cf-skill{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.cf-sk-name{flex:1;font-size:12.5px;color:var(--ink-soft);line-height:1.3;min-width:0}
+.cf-sk-bar{flex:0 0 56px;height:6px;background:var(--line);border-radius:4px;overflow:hidden}
+.cf-sk-fill{height:100%;background:var(--grad);border-radius:4px}
+.cf-sk-val{flex:0 0 14px;font-size:11.5px;font-weight:800;color:var(--tech-indigo);text-align:right}
+.cf-sk-txt{font-size:11.5px;color:var(--muted);font-weight:600;flex:0 0 auto}
+.cf-ev{font-size:11.5px;color:var(--muted);font-style:italic;background:var(--lavender);border-radius:8px;padding:8px 11px;margin-top:8px;display:flex;gap:6px;align-items:flex-start;line-height:1.4}
+.cf-ev i{font-size:13px;margin-top:1px;color:var(--indigo-light);flex:0 0 auto}
+
+/* Tech assessment */
+.tassess{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:10px;background:var(--lavender)}
+.tassess:last-child{margin-bottom:0}
+.ta-main{display:flex;align-items:center;gap:12px;min-width:0}
+.ta-pct{font-size:15px;font-weight:800;color:#15803d;background:#dcfce7;border-radius:9px;padding:7px 11px;flex:0 0 auto}
+.ta-ico{width:36px;height:36px;border-radius:9px;background:#EEEDFE;color:var(--tech-indigo);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.ta-ico i{font-size:18px}
+.ta-txt{min-width:0}
+.ta-line{font-size:13.5px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ta-date{font-size:11.5px;color:var(--muted);margin-top:2px}
+.ta-link{font-size:12.5px;font-weight:700;color:var(--blue-purple);text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;border:1px solid var(--line);border-radius:9px;padding:8px 13px;background:#fff;flex:0 0 auto}
+.ta-link:hover{border-color:var(--blue-purple)}
+
+/* Onboarding stepper */
+.ob-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.ob-pct{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap}
+.pbar{flex:1;height:9px;background:var(--lavender);border-radius:6px;overflow:hidden}
+.pbar-fill{height:100%;background:var(--grad);border-radius:6px;width:0;transition:width .6s ease}
+.stepper{list-style:none}
+.stp{display:flex;align-items:flex-start;gap:12px;padding:9px 0;position:relative}
+.stp:not(:last-child)::before{content:'';position:absolute;left:12px;top:30px;bottom:-9px;width:2px;background:var(--line)}
+.stp.done:not(:last-child)::before{background:var(--blue-purple)}
+.stp .marker{width:24px;height:24px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid var(--line);background:var(--white);color:var(--muted);z-index:1}
+.stp.done .marker{background:var(--blue-purple);border-color:var(--blue-purple);color:#fff}
+.stp.current .marker{border-color:var(--electric-purple);color:var(--electric-purple);box-shadow:0 0 0 3px rgba(168,85,247,.18)}
+.stp .stxt{font-size:14px;color:var(--ink-soft);padding-top:2px}
+.stp.done .stxt{color:var(--muted)}
+.stp.current .stxt{color:var(--tech-indigo);font-weight:700}
+.ob-warn{font-size:12.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:11px 14px;margin-top:14px;display:flex;gap:8px;align-items:flex-start}
+.ob-warn i{font-size:15px;margin-top:1px}
+.ob-top{display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.ob-top .ob-head{flex:1;min-width:220px;margin-bottom:0}
+.ob-badges{display:flex;gap:8px;flex-wrap:wrap}
+.ready-badge{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;white-space:nowrap}
+.ready-badge.ok{background:#dcfce7;color:#15803d}.ready-badge.mid{background:#fef3c7;color:#b45309}.ready-badge.low{background:#ede9fe;color:#6d28d9}
+.place-badge{font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;background:var(--lavender);color:var(--tech-indigo);border:1px solid var(--line);display:inline-flex;align-items:center;gap:5px}
+.ob-cols{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+@media(max-width:680px){.ob-cols{grid-template-columns:1fr;gap:18px}}
+.ob-sub{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:12px}
+.ms-grid{display:flex;flex-direction:column;gap:9px}
+.ms{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted)}
+.ms i{font-size:18px;color:var(--line)}
+.ms.done{color:var(--ink-soft);font-weight:600}
+.ms.done i{color:var(--ok)}
+
+/* Loading / empty / error */
+.center-state{max-width:560px;margin:80px auto;text-align:center;padding:0 24px}
+.center-state .ico{font-size:46px;color:var(--indigo-light);margin-bottom:14px}
+.center-state h2{font-size:22px;font-weight:800;margin-bottom:8px}
+.center-state p{color:var(--ink-soft);font-size:15px}
+.spinner{width:42px;height:42px;border:4px solid var(--line);border-top-color:var(--blue-purple);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 18px}
+.retry{margin-top:18px;background:var(--blue-purple);color:#fff;border:none;border-radius:11px;padding:11px 22px;font-size:14px;font-weight:600}
+.retry:hover{background:var(--deep-violet)}
+.foot{text-align:center;color:var(--muted);font-size:11.5px;padding:18px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#A855F7"/>
+  </linearGradient>
+  <linearGradient id="areaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="rgba(124,58,237,.22)"/><stop offset="100%" stop-color="rgba(124,58,237,0)"/>
+  </linearGradient>
+</defs></svg>
+
+<div class="topbar"><div class="topbar-inner">
+  <div class="brand"><span class="brand-trail"><i></i><i></i><i></i></span><span class="brand-logo">FutureProofing</span></div>
+  <div class="topbar-right">
+    <span class="topbar-track">Onboarding &amp; HR</span>
+    <button class="refresh" id="refreshBtn" onclick="load(true)"><i class="ti ti-refresh"></i>Refresh</button>
+  </div>
+</div></div>
+
+<div id="summary" class="summary hidden"></div>
+<div id="main"></div>
+<div class="foot" id="foot"></div>
+
+<script>
+const API = '/api/talent';
+let DATA = null, selected = 0;
+
+function initials(name){return (name||'?').split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
+function pct(x){return Math.round((x==null?0:x)*100);}
+function fmtDate(d){if(!d)return '—';const t=new Date(d);if(isNaN(t))return '—';return t.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'});}
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function trendDot(delta){
+  if(delta==null) return 'flat';
+  if(delta>0.02) return 'up';
+  if(delta<-0.02) return 'down';
+  return 'flat';
+}
+
+// Qualitative AI-readiness state derived from evaluation scores.
+function aiReadiness(score){
+  if(score==null) return {label:'No evaluations', cls:'none'};
+  if(score>=0.78) return {label:'AI Ready', cls:'ok'};
+  if(score>=0.6)  return {label:'On Track', cls:'mid'};
+  return {label:'In Development', cls:'low'};
+}
+
+// ---- Progress line chart (SVG) ----
+function lineChart(progress){
+  if(!progress || progress.length<1){
+    return '<div class="chart-empty">No evaluations recorded in Ashby for this person yet.</div>';
+  }
+  const W=Math.max(440, progress.length*120), H=210, pad={l:38,r:20,t:18,b:46};
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b;
+  const n=progress.length;
+  const xs=i=> n===1 ? pad.l+iw/2 : pad.l + (iw*i)/(n-1);
+  const ys=v=> pad.t + ih*(1-Math.max(0,Math.min(1,v)));
+  const pts=progress.map((p,i)=>[xs(i),ys(p.score)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=`M${pts[0][0].toFixed(1)} ${(pad.t+ih).toFixed(1)} `+
+             pts.map(p=>'L'+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ')+
+             ` L${pts[n-1][0].toFixed(1)} ${(pad.t+ih).toFixed(1)} Z`;
+  const grid=[0,.25,.5,.75,1].map(g=>{
+    const y=ys(g);
+    return `<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="#EEE9F9" stroke-width="1"/>`+
+           `<text x="${pad.l-8}" y="${y+3}" text-anchor="end" font-size="9" fill="#9b93ad">${g*100|0}</text>`;
+  }).join('');
+  const dots=pts.map((p,i)=>{
+    const lbl=esc(progress[i].label||('Eval '+(i+1)));
+    const short=lbl.length>16?lbl.slice(0,15)+'…':lbl;
+    return `<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="#fff" stroke="url(#lineGrad)" stroke-width="2.5"/>`+
+           `<text x="${p[0]}" y="${p[1]-11}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4C1D95">${pct(progress[i].score)}</text>`+
+           `<text x="${p[0]}" y="${H-26}" text-anchor="middle" font-size="9.5" fill="#6B6480">${short}</text>`;
+  }).join('');
+  return `<div class="chart-wrap"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" aria-label="Evaluation progress">
+    ${grid}
+    <path d="${area}" fill="url(#areaGrad)"/>
+    <path d="${line}" fill="none" stroke="url(#lineGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}
+  </svg></div>`;
+}
+
+function compBars(comps){
+  if(!comps||!comps.length) return '<div class="chart-empty">No rated attributes yet.</div>';
+  return comps.map(c=>{
+    const p=pct(c.score), low=c.score<0.6;
+    return `<div class="el-row">
+      <div class="el-name" title="${esc(c.name)}">${esc(c.name)}</div>
+      <div class="el-bar-track"><div class="el-bar-fill ${low?'low':''}" style="width:${p}%"></div></div>
+      <div class="el-score">${p}</div>
+    </div>`;
+  }).join('');
+}
+
+function coachList(coaching){
+  if(!coaching||!coaching.length){
+    return `<div class="coach-none"><i class="ti ti-circle-check"></i><div>No coaching focus: every evaluated competency is at a healthy level (≥60).</div></div>`;
+  }
+  return coaching.map(c=>`<div class="coach">
+    <div><div class="cn">${esc(c.name)}</div><div class="cs">Avg across evaluations: ${pct(c.score)}/100</div></div>
+    <span class="badge ${c.severity}">${c.severity==='flag'?'High priority':'Needs work'}</span>
+  </div>`).join('');
+}
+
+function coachingCard(cf){
+  if(!cf){
+    return `<div class="chart-empty">No coaching self-assessment submitted yet.</div>`;
+  }
+  const wants=cf.wants?`<div class="coach-wants"><i class="ti ti-target-arrow"></i><div><span class="cw-lbl">Wants coaching on next</span><span class="cw-val">${esc(cf.wants)}</span></div></div>`:'';
+  const cats=(cf.categories||[]).map(c=>{
+    const skills=(c.skills||[]).map(s=>{
+      const num=(s.rating&&(s.rating.match(/^\s*(\d)/)||[])[1])||null;
+      if(s.score!=null){
+        return `<div class="cf-skill"><span class="cf-sk-name" title="${esc(s.name)} — ${esc(s.rating)}">${esc(s.name)}</span><span class="cf-sk-bar"><span class="cf-sk-fill" style="width:${pct(s.score)}%"></span></span><span class="cf-sk-val">${num||pct(s.score)}</span></div>`;
+      }
+      return `<div class="cf-skill"><span class="cf-sk-name">${esc(s.name)}</span><span class="cf-sk-txt">${esc(s.rating||'—')}</span></div>`;
+    }).join('');
+    const ev=c.evidence?`<div class="cf-ev"><i class="ti ti-quote"></i> ${esc(c.evidence)}</div>`:'';
+    return `<div class="cf-cat"><h5>${esc(c.name||'')}</h5>${skills}${ev}</div>`;
+  }).join('');
+  return `${wants}<div class="cf-grid">${cats}</div>`;
+}
+
+function techCard(ta){
+  if(!ta||!ta.found){
+    return `<div class="chart-empty">No tech test / HackerRank result logged in Ashby notes.</div>`;
+  }
+  return ta.items.map(it=>`<div class="tassess">
+    <div class="ta-main">
+      ${it.pct!=null?`<span class="ta-pct">${it.pct}%</span>`:'<span class="ta-ico"><i class="ti ti-code"></i></span>'}
+      <div class="ta-txt"><div class="ta-line" title="${esc(it.text)}">${esc(it.text)}</div><div class="ta-date">${fmtDate(it.date)}</div></div>
+    </div>
+    ${it.url?`<a class="ta-link" href="${esc(it.url)}" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> Results</a>`:''}
+  </div>`).join('');
+}
+
+function stepper(ob){
+  const steps=(ob.steps||[]).map(s=>{
+    const cls=s.current?'current':s.done?'done':'';
+    const icon=s.done?'<i class="ti ti-check"></i>':(s.current?'<i class="ti ti-point-filled"></i>':'');
+    return `<li class="stp ${cls}"><div class="marker">${icon}</div><div class="stxt">${esc(s.label)}</div></li>`;
+  }).join('');
+
+  const ms=(ob.milestones||[]);
+  const msHtml=ms.length?`<div class="ms-grid">${ms.map(m=>
+    `<div class="ms ${m.done?'done':''}"><i class="ti ${m.done?'ti-circle-check-filled':'ti-circle'}"></i>${esc(m.label)}</div>`
+  ).join('')}</div>`:'<div class="chart-empty">No milestones.</div>';
+
+  const readiness=ob.readiness?`<span class="ready-badge ${readyClass(ob.readiness)}">${esc(ob.readiness)}</span>`:'';
+  const placement=(ob.placement&&ob.placement.length)?`<span class="place-badge"><i class="ti ti-building"></i> ${ob.placement.map(esc).join(', ')}</span>`:'';
+
+  let warn='';
+  if(ob.notionConfigured===false){
+    warn=`<div class="ob-warn"><i class="ti ti-plug-connected-x"></i><div>Notion is not connected. Set <b>NOTION_API_KEY</b> and share the <b>"Engineers"</b> database with the integration to see the real stage.</div></div>`;
+  }else if(!ob.matched){
+    warn=`<div class="ob-warn"><i class="ti ti-search-off"></i><div>This person wasn't found in the Notion database. Check that the <b>Candidate Email</b> (or name) matches Ashby.</div></div>`;
+  }
+
+  return `<div class="ob-top">
+      <div class="ob-head">
+        <div class="pbar"><div class="pbar-fill" style="width:${ob.pct}%"></div></div>
+        <div class="ob-pct">${ob.pct}% · ${esc(ob.status||'—')}</div>
+      </div>
+      <div class="ob-badges">${readiness}${placement}</div>
+    </div>
+    <div class="ob-cols">
+      <div>
+        <div class="ob-sub">Pipeline (Weekly Update Stage)</div>
+        <ul class="stepper">${steps}</ul>
+      </div>
+      <div>
+        <div class="ob-sub">Milestones (${ob.milestonesDone||0}/${ob.milestonesTotal||(ob.milestones||[]).length})</div>
+        ${msHtml}
+      </div>
+    </div>${warn}`;
+}
+function readyClass(r){
+  const s=(r||'').toLowerCase();
+  if(s.includes('production')) return 'ok';
+  if(s.includes('scaling')) return 'mid';
+  return 'low';
+}
+
+function renderSummary(s){
+  const el=document.getElementById('summary');
+  el.classList.remove('hidden');
+  el.innerHTML=`<div class="dash-stats">
+    <div class="stat"><div class="stat-l">Hired</div><div class="stat-v">${s.totalHired}</div><div class="stat-s">AI Engineers</div></div>
+    <div class="stat"><div class="stat-l">With evaluations</div><div class="stat-v">${s.withEvaluations}</div><div class="stat-s">scored in Ashby</div></div>
+    <div class="stat"><div class="stat-l">Avg evaluations</div><div class="stat-v">${s.avgEvaluations}</div><div class="stat-s">per person</div></div>
+    <div class="stat"><div class="stat-l">Improving</div><div class="stat-v">${s.improving}</div><div class="stat-s">positive trend</div></div>
+    <div class="stat"><div class="stat-l">Need coaching</div><div class="stat-v">${s.needCoaching}</div><div class="stat-s">with open focus</div></div>
+    <div class="stat"><div class="stat-l">Tech tested</div><div class="stat-v">${s.techTested!=null?s.techTested:'—'}</div><div class="stat-s">HackerRank logged</div></div>
+    <div class="stat"><div class="stat-l">Coaching forms</div><div class="stat-v">${s.coachingForms!=null?s.coachingForms:'—'}</div><div class="stat-s">self-assessments</div></div>
+  </div>`;
+}
+
+function render(){
+  if(!DATA){return;}
+  renderSummary(DATA.summary);
+  const people=DATA.people||[];
+  const main=document.getElementById('main');
+  if(!people.length){
+    main.innerHTML=`<div class="center-state"><div class="ico"><i class="ti ti-users"></i></div>
+      <h2>No hires yet</h2>
+      <p>No applications with status <b>Hired</b> were found in the AI Engineer role(s) in Ashby.</p></div>`;
+    return;
+  }
+  if(selected>=people.length) selected=0;
+  const list=people.map((p,i)=>{
+    const d=trendDot(p.delta);
+    return `<button class="person ${i===selected?'active':''}" onclick="pick(${i})">
+      <span class="av">${esc(initials(p.name))}</span>
+      <span class="pinfo">
+        <span class="pname">${esc(p.name)}</span>
+        <span class="psub"><span class="dot ${d}"></span>${p.evalCount} eval${p.evalCount===1?'':'s'} · onb ${p.onboarding?p.onboarding.pct:0}%</span>
+      </span>
+    </button>`;
+  }).join('');
+
+  const p=people[selected];
+  const deltaCls=trendDot(p.delta);
+  const deltaTxt=p.delta==null?'No trend yet':(p.delta>0?'+':'')+pct(p.delta)+' pts vs. 1st eval';
+  const deltaIcon=deltaCls==='up'?'ti-trending-up':deltaCls==='down'?'ti-trending-down':'ti-minus';
+
+  main.innerHTML=`<div class="shell">
+    <nav class="sidebar">
+      <div class="side-label">Hires (${people.length})</div>
+      ${list}
+    </nav>
+    <main class="stage">
+      <div class="ctx">
+        <div>
+          <div class="who">${esc(p.role)}</div>
+          <div class="role">${esc(p.name)}</div>
+          <div class="meta">
+            <span><i class="ti ti-calendar"></i> Hired ${fmtDate(p.hiredAt)}</span>
+            ${p.source?`<span><i class="ti ti-flag"></i> ${esc(p.source)}</span>`:''}
+            <span><i class="ti ti-clipboard-check"></i> ${p.evalCount} evaluations</span>
+          </div>
+        </div>
+        <div class="ctx-score">
+          <div class="ai-ready ${aiReadiness(p.avgScore).cls}">${aiReadiness(p.avgScore).label}</div>
+          <div class="lbl">AI readiness</div>
+          <div class="delta ${deltaCls}"><i class="ti ${deltaIcon}"></i>${deltaTxt}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-title">Evaluation progress</div>
+        ${lineChart(p.progress)}
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="sec-title">Evaluated competencies</div>
+          ${compBars(p.competencies)}
+        </div>
+        <div class="card">
+          <div class="sec-title">Coaching focus</div>
+          ${coachList(p.coaching)}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-title">Coaching preferences (self-assessment)</div>
+        ${coachingCard(p.coachingForm)}
+      </div>
+
+      <div class="card">
+        <div class="sec-title">Tech assessment (HackerRank)</div>
+        ${techCard(p.techAssessment)}
+      </div>
+
+      <div class="card">
+        <div class="sec-title">Onboarding</div>
+        ${stepper(p.onboarding||{steps:[],pct:0,status:'—'})}
+      </div>
+    </main>
+  </div>`;
+}
+
+function pick(i){selected=i;render();window.scrollTo({top:0,behavior:'smooth'});}
+
+async function load(fresh){
+  const btn=document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  document.getElementById('summary').classList.add('hidden');
+  document.getElementById('main').innerHTML=`<div class="center-state"><div class="spinner"></div>
+    <h2>Loading talent…</h2><p>Pulling hires and evaluations from Ashby + Notion.</p></div>`;
+  try{
+    const res=await fetch(API+(fresh?'?fresh=1':''));
+    const json=await res.json();
+    if(!res.ok) throw new Error(json.error||('HTTP '+res.status));
+    DATA=json; selected=0; render();
+    const cache=res.headers.get('X-Cache')||'';
+    document.getElementById('foot').textContent=
+      `Updated ${fmtDate(json.generatedAt)} · ${json.summary.notionConnected?'Notion connected':'Notion not connected'} · ${cache}`;
+  }catch(e){
+    document.getElementById('main').innerHTML=`<div class="center-state"><div class="ico"><i class="ti ti-alert-triangle"></i></div>
+      <h2>Couldn't load</h2><p>${esc(e.message)}</p>
+      <button class="retry" onclick="load(true)">Retry</button></div>`;
+  }finally{
+    btn.classList.remove('spinning');
+  }
+}
+
+load(false);
+</script>
+</body>
+</html>

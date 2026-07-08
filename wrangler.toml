@@ -9,3 +9,7 @@ pages_build_output_dir = "public"
 #
 # Pages Functions live in /functions and are auto-deployed with the Pages project.
 # The /api/report endpoint is handled by functions/api/report.js
+
+[[kv_namespaces]]
+binding = "REPORTS_HISTORY"
+id = "5fa32f2290a747f99a4c6bcd20d8c7be"

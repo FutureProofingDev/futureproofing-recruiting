@@ -1,0 +1,38 @@
+name = "futureproofing-eval-engine"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ── D1 database ───────────────────────────────────────────────────────────────
+# Create with: wrangler d1 create eval-engine-db
+# Then paste the returned database_id below (local dev works without it).
+[[d1_databases]]
+binding = "DB"
+database_name = "eval-engine-db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# ── Workflow: durable multi-step candidate evaluation pipeline ────────────────
+[[workflows]]
+binding = "EVAL_WORKFLOW"
+name = "candidate-evaluation"
+class_name = "CandidateEvaluationWorkflow"
+
+# ── Cron: poll Ashby for candidates at each pipeline's trigger stage ─────────
+[triggers]
+crons = ["*/10 * * * *"]
+
+# ── Vars (non-secret config) ──────────────────────────────────────────────────
+[vars]
+# Anthropic model used for stage evaluations + synthesis. Override without a
+# code change if a newer/cheaper model should be used.
+ANTHROPIC_MODEL = "claude-sonnet-5"
+# How many days back the poller still checks candidates already at the
+# trigger stage, so late-arriving feedback (e.g. a slow scorecard) triggers
+# a re-generation instead of only firing once on first arrival.
+POLL_LOOKBACK_DAYS = "30"
+
+# ── Secrets (set via `wrangler secret put <NAME>`) ────────────────────────────
+#   ASHBY_API_KEY       — same key already used by the Pages Functions in this repo
+#   ANTHROPIC_API_KEY    — Anthropic API key for evaluation generation
+#   ENGINE_INTERNAL_KEY  — shared secret; only the Pages Function proxy
+#                          (functions/api/candidate-summary.js) should know it

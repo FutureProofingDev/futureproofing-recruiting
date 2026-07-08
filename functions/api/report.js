@@ -79,14 +79,14 @@ async function ashbyPost(apiKey, endpoint, body = {}, retries = 4) {
   }
 }
 
-async function getAllApplications(apiKey, jobId) {
+async function getAllApplications(apiKey, filter = {}) {
   const all = [];
   let cursor;
   let page = 0;
-  const maxPages = 200;
+  const maxPages = 300;
 
   while (page < maxPages) {
-    const body = { jobId };
+    const body = { ...filter, limit: 100 };
     if (cursor) body.cursor = cursor;
 
     const data = await ashbyPost(apiKey, '/application.list', body);
@@ -101,6 +101,19 @@ async function getAllApplications(apiKey, jobId) {
   return all;
 }
 
+// Normalize source names so duplicate/variant labels are merged
+function normalizeSourceName(raw) {
+  if (!raw) return null;
+  const r = raw.trim();
+  const lower = r.toLowerCase();
+  // "Applied" = people who clicked Apply directly on the posting (LinkedIn + organic traffic)
+  if (lower === 'applied') return 'LinkedIn + Organic';
+  // Merge capitalization variants
+  if (lower === 'juicebox') return 'JuiceBox';
+  if (lower === 'linkedin') return 'LinkedIn Limited Listings';
+  return r;
+}
+
 function getSourceLabel(app) {
   // Try every known Ashby field variation for source
   const s = app.source || app.applicationSource || app.sourceType || app.origin;
@@ -109,8 +122,8 @@ function getSourceLabel(app) {
     if (app.creditedToUser?.name) return `Recruiter: ${app.creditedToUser.name}`;
     return null; // explicitly null = no source data
   }
-  if (typeof s === 'string') return s;
-  return s.label || s.name || s.displayName || s.type || s.subtype || null;
+  const raw = typeof s === 'string' ? s : (s.title || s.label || s.name || s.displayName || s.type || s.subtype || null);
+  return normalizeSourceName(raw);
 }
 
 function getCurrentStageName(app) {
@@ -147,6 +160,7 @@ function computeMetrics(applications) {
   const hired     = augmented.filter(a => st(a) === 'hired').length;
   const archived  = augmented.filter(a => st(a) === 'archived').length;
   const active    = augmented.filter(a => st(a) === 'active').length;
+  const leads     = augmented.filter(a => st(a) === 'lead').length;
   const pendingOffer = augmented.filter(a =>
     st(a) === 'active' && a._stageIdx >= 6
   ).length;
@@ -159,11 +173,17 @@ function computeMetrics(applications) {
     const prevTotalReached = i === 0 ? total : augmented.filter(a => a._stageIdx >= i - 1).length;
     const passRate        = prevTotalReached > 0 ? totalReached / prevTotalReached : 1;
 
+    // For the Hired stage, "active at stage" = total hired (they have status 'hired', not 'active')
+    const isHiredStage = stage.key === 'hired';
+    const activeAtStage = isHiredStage
+      ? atStage.filter(a => st(a) === 'hired').length
+      : atStage.filter(a => st(a) === 'active').length;
+
     return {
       stage: stage.label,
       key:   stage.key,
       totalReached,
-      activeAtStage:   atStage.filter(a => st(a) === 'active').length,
+      activeAtStage,
       archivedAtStage: atStage.filter(a => st(a) === 'archived').length,
       passRate,
     };
@@ -249,7 +269,7 @@ function computeMetrics(applications) {
 
   return {
     generatedAt: now.toISOString(),
-    pipeline: { totalApplications: total, totalActive: active, totalArchived: archived, totalHired: hired, pendingOffer },
+    pipeline: { totalApplications: total, totalActive: active, totalLeads: leads, totalArchived: archived, totalHired: hired, pendingOffer },
     funnel,
     sources,
     sourceDataCoverage,
@@ -289,7 +309,7 @@ export async function onRequestOptions() {
 
 export async function onRequestGet({ request, env, waitUntil }) {
   const cache = caches.default;
-  const cacheKey = new Request('https://futureproofing-internal-cache/report-v2');
+  const cacheKey = new Request('https://futureproofing-internal-cache/report-v19');
 
   // Serve from cache if available
   const cached = await cache.match(cacheKey);
@@ -304,34 +324,38 @@ export async function onRequestGet({ request, env, waitUntil }) {
     const apiKey = env.ASHBY_API_KEY;
     if (!apiKey) throw new Error('ASHBY_API_KEY environment variable is not set');
 
-    // 1. List all jobs, filter for AI Engineer
-    const jobsData = await ashbyPost(apiKey, '/job.list', {});
-    let jobs = (jobsData.results || []);
-
-    let aiJobs = jobs.filter(j => j.title?.toLowerCase().includes('ai engineer'));
-    if (aiJobs.length === 0) {
-      aiJobs = jobs.filter(j =>
-        j.title?.toLowerCase().includes(' ai ') ||
-        j.title?.toLowerCase().includes('machine learning') ||
-        j.title?.toLowerCase().includes('ml engineer')
-      );
+    // Step 1: paginate job list (2 pages covers all 110 jobs in this org)
+    const allJobs = [];
+    let jobCursor;
+    for (let p = 0; p < 3; p++) {
+      const body = { includeArchived: true };
+      if (jobCursor) body.cursor = jobCursor;
+      const jobsData = await ashbyPost(apiKey, '/job.list', body);
+      allJobs.push(...(jobsData.results || []));
+      jobCursor = jobsData.nextCursor || null;
+      if (!jobCursor) break;
     }
 
+    // Step 2: match OPEN AI Engineer jobs — prefer Open status to avoid closed/contract jobs
+    // Known: "AI Engineer" (Open, id 38202bf1...) is the main pipeline
+    function isAIJob(j) {
+      const t = (j.title || '').toLowerCase();
+      return t.includes('ai engineer') || (t.includes('ai') && t.includes('software engineer'));
+    }
+    // Prefer Open jobs; fall back to all AI jobs if none are open
+    let aiJobs = allJobs.filter(j => isAIJob(j) && (j.status || '').toLowerCase() === 'open');
     if (aiJobs.length === 0) {
-      return jsonResponse({
-        error: 'No AI Engineer job found in Ashby. Check available jobs below.',
-        availableJobs: jobs.slice(0, 30).map(j => ({ id: j.id, title: j.title, status: j.status })),
-      }, 404);
+      aiJobs = allJobs.filter(isAIJob);
     }
 
-    // 2. Fetch all applications (paginated) for each matching job
+    // Step 3: fetch applications for each matched job (paginated, limit 100 per page)
     let allApplications = [];
     for (const job of aiJobs) {
-      const apps = await getAllApplications(apiKey, job.id);
+      const apps = await getAllApplications(apiKey, { jobId: job.id });
       allApplications.push(...apps);
     }
 
-    // Deduplicate by application ID (in case jobs overlap)
+    // Deduplicate by ID
     const seen = new Set();
     allApplications = allApplications.filter(a => {
       if (seen.has(a.id)) return false;
@@ -340,6 +364,49 @@ export async function onRequestGet({ request, env, waitUntil }) {
     });
 
     const metrics = computeMetrics(allApplications);
+    // Keep a lightweight debug summary (not full job lists)
+    metrics.debug.matchedJobs = aiJobs.map(j => ({ id: j.id, title: j.title, status: j.status }));
+
+    // ── Historical snapshots via KV ──────────────────────────────────────
+    const kv = env.REPORTS_HISTORY;
+    if (kv) {
+      try {
+        // Load existing history (array of up to 3 snapshots)
+        const histRaw = await kv.get('history', 'json');
+        const history = Array.isArray(histRaw) ? histRaw : [];
+
+        // Attach the last 3 snapshots to the response for trend display
+        metrics.history = history.slice(0, 3);
+
+        // Build a compact snapshot of key metrics to store
+        const snapshot = {
+          ts:              metrics.generatedAt,
+          totalActive:     metrics.pipeline.totalActive,
+          totalHired:      metrics.pipeline.totalHired,
+          totalArchived:   metrics.pipeline.totalArchived,
+          totalApplications: metrics.pipeline.totalApplications,
+          overallConversion: metrics.overallConversion,
+          funnel: metrics.funnel.map(f => ({
+            key:           f.key,
+            stage:         f.stage,
+            activeAtStage: f.activeAtStage,
+            totalReached:  f.totalReached,
+            passRate:      f.passRate,
+          })),
+          topSource:       metrics.topSource,
+          referralHires:   metrics.referralHires,
+        };
+
+        // Prepend new snapshot, keep last 10 in KV (we only show 3 in UI)
+        const updated = [snapshot, ...history].slice(0, 10);
+        // Use await directly (not waitUntil) to ensure the write completes
+        await kv.put('history', JSON.stringify(updated));
+      } catch (kvErr) {
+        console.error('[report] KV error:', kvErr.message);
+        metrics.debug.kvError = kvErr.message; // expose for debugging
+        // Non-fatal — continue without history
+      }
+    }
 
     const response = new Response(JSON.stringify(metrics, null, 2), {
       headers: {

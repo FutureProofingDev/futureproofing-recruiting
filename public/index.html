@@ -573,6 +573,48 @@
     .insight-note.red    .in-label { color: var(--red); }
     .insight-note.purple .in-label { color: var(--purple); }
 
+    /* ─── History / Trend ─────────────────────────────────────────────── */
+    .hist-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px; margin-bottom: 14px;
+    }
+    .hist-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+    }
+    .hist-date {
+      font-size: 11px; font-weight: 600; color: var(--text3);
+      letter-spacing: .4px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .hist-date::before {
+      content: ''; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--border-s); flex-shrink: 0;
+    }
+    .hist-rows { display: flex; flex-direction: column; gap: 6px; }
+    .hist-row {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px;
+    }
+    .hist-lbl { color: var(--text2); }
+    .hist-val { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+    .hist-delta {
+      font-size: 11px; font-weight: 600; margin-left: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    .hist-delta.up   { color: var(--green); }
+    .hist-delta.down { color: var(--red); }
+    .hist-delta.same { color: var(--text3); }
+    .hist-stages {
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px;
+    }
+    .hs-item { font-size: 11px; color: var(--text2); }
+    .hs-name { display: inline; }
+    .hs-n    { font-weight: 600; color: var(--text); margin-left: 4px; }
+    .hs-d    { font-size: 10px; margin-left: 2px; }
+
     @media (max-width: 580px) {
       .funnel-row    { grid-template-columns: 1fr 56px 56px 72px 24px; }
       .f-track       { display: none; }
@@ -863,7 +905,8 @@ function diagnoseFunnel(d) {
 }
 
 function analyzeChannels(d) {
-  const sources = (d.sources || []).filter(s => s.total > 0);
+  // Filter out channels with very few apps unless they have actual hires (keeps Referral, removes noise)
+  const sources = (d.sources || []).filter(s => s.total >= 5 || s.hires > 0);
   const p = d.pipeline || {};
   const total = Math.max(1, p.totalApplications || 1);
 
@@ -1222,6 +1265,80 @@ function detectContextGaps(d, ctxObj) {
 
 // ─── Render Functions ──────────────────────────────────────────────────────
 
+function renderHistorySection(d) {
+  const history = d.history;
+  if (!history || history.length === 0) return ''; // no history yet — first run
+
+  const cur = d.pipeline || {};
+  const curFunnel = Object.fromEntries((d.funnel || []).map(f => [f.key, f]));
+
+  function fmtDate(ts) {
+    if (!ts) return '—';
+    const dt = new Date(ts);
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  function delta(cur, prev, higherIsBetter = true) {
+    if (prev === undefined || prev === null) return '';
+    const diff = cur - prev;
+    if (diff === 0) return '<span class="hist-delta same">—</span>';
+    const sign = diff > 0 ? '+' : '';
+    const cls  = (diff > 0) === higherIsBetter ? 'up' : 'down';
+    return `<span class="hist-delta ${cls}">${sign}${diff}</span>`;
+  }
+
+  const cards = history.slice(0, 3).map(snap => {
+    const snapFunnel = Object.fromEntries((snap.funnel || []).map(f => [f.key, f]));
+    const keyStages = ['interview1','techAssessment','cultureBehavior','techInterviewSantiago'];
+
+    return `
+      <div class="hist-card">
+        <div class="hist-date">${fmtDate(snap.ts)}</div>
+        <div class="hist-rows">
+          <div class="hist-row">
+            <span class="hist-lbl">Active Pipeline</span>
+            <span class="hist-val">${num(snap.totalActive)} ${delta(cur.totalActive, snap.totalActive)}</span>
+          </div>
+          <div class="hist-row">
+            <span class="hist-lbl">Total Hired</span>
+            <span class="hist-val">${num(snap.totalHired)} ${delta(cur.totalHired, snap.totalHired)}</span>
+          </div>
+          <div class="hist-row">
+            <span class="hist-lbl">Archived</span>
+            <span class="hist-val">${num(snap.totalArchived)} ${delta(cur.totalArchived, snap.totalArchived, false)}</span>
+          </div>
+          <div class="hist-row">
+            <span class="hist-lbl">Conversion</span>
+            <span class="hist-val">${pct(snap.overallConversion)} ${delta(
+              Math.round((d.overallConversion||0)*1000),
+              Math.round((snap.overallConversion||0)*1000)
+            )}</span>
+          </div>
+        </div>
+        <div class="hist-stages">
+          ${keyStages.map(key => {
+            const sf = snapFunnel[key];
+            const cf = curFunnel[key];
+            if (!sf) return '';
+            const stageDelta = cf ? delta(cf.activeAtStage, sf.activeAtStage) : '';
+            return `<div class="hs-item"><span class="hs-name">${sf.stage}</span><span class="hs-n">${num(sf.activeAtStage)}</span>${stageDelta}</div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <section class="sec" id="s-history">
+      <div class="sec-eyebrow">Historical Comparison</div>
+      <div class="sec-title">Pipeline vs. Previous Reports</div>
+      <div class="sec-desc">How the pipeline has moved since the last ${history.length > 1 ? history.length : ''} snapshot${history.length > 1 ? 's' : ''}. Green = improvement vs that snapshot.</div>
+      <div class="hist-grid">${cards}</div>
+      <div class="insight-note purple" style="margin-top:0">
+        <div class="in-label">About snapshots</div>
+        Each card shows pipeline state at that point in time. The deltas (±) show the change <strong>from that snapshot to now</strong>. Snapshots are saved automatically every 5 minutes when the dashboard loads.
+      </div>
+    </section>`;
+}
+
 function renderCommandCenter(d, analysis, ctxObj) {
   const { health, bot, forecast, econ } = analysis;
   const p    = d.pipeline || {};
@@ -1284,7 +1401,7 @@ function renderCommandCenter(d, analysis, ctxObj) {
         { lbl: 'Hired', val: num(hired), color: 'var(--green)' },
         { lbl: 'Pending Offer', val: num(p.pendingOffer), color: 'var(--amber)' },
         { lbl: 'Days Left', val: dl, color: dl < 30 ? 'var(--red)' : dl < 60 ? 'var(--amber)' : 'var(--green)' },
-        { lbl: 'Forecast', val: onTrack ? '✓ On Track' : '⚠ Off Track', color: onTrack ? 'var(--green)' : 'var(--red)' },
+        { lbl: 'Forecast', val: onTrack ? '✓ On Target' : '↗ Below Target', color: onTrack ? 'var(--green)' : 'var(--amber)' },
       ].map(t => `
         <div class="pulse-tile">
           <div class="pt-lbl">${t.lbl}</div>
@@ -1631,6 +1748,7 @@ function renderDashboard(d, ctx) {
 
   $('dashContent').innerHTML = [
     renderCommandCenter(d, analysis, ctxObj),
+    renderHistorySection(d),
     renderFunnelSection(d, analysis),
     renderChannelSection(d, analysis),
     renderEconomicsSection(d, analysis, ctxObj),
