@@ -59,9 +59,9 @@ button{font-family:inherit;cursor:pointer}
 .ctx-score .conf-lbl{font-size:13px;color:#E6DEF7;font-weight:700}
 .ctx-score .lbl{font-size:11px;color:var(--indigo-light);text-transform:uppercase;letter-spacing:.6px;margin-top:6px}
 
-.exec-card{background:linear-gradient(135deg,#FBF5FF,#EEF2FF);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px}
-.exec-label{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--blue-purple);font-weight:800;margin-bottom:8px}
-.exec-text{font-size:15.5px;color:var(--ink);font-weight:600;line-height:1.5}
+.exec-card{background:linear-gradient(135deg,#FBF5FF,#EEF2FF);border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin-bottom:24px}
+.exec-label{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--blue-purple);font-weight:800;margin-bottom:10px}
+.exec-text{font-size:15.5px;color:var(--ink-soft);font-weight:400;line-height:1.7}
 
 .sec-title{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--blue-purple);font-weight:700;margin:0 0 11px;display:flex;align-items:center;justify-content:space-between}
 .card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px}
@@ -70,34 +70,38 @@ button{font-family:inherit;cursor:pointer}
 .chart-empty{font-size:13.5px;color:var(--muted);padding:18px;text-align:center;background:var(--lavender);border-radius:10px}
 
 /* Collapsed-by-default accordion sections (Summary, Scorecard, Flags, Timeline) */
-details.accordion{background:var(--white);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
-details.accordion>summary{list-style:none;cursor:pointer;padding:16px 20px;display:flex;align-items:center;gap:11px;font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--blue-purple);font-weight:700}
+details.accordion{background:var(--white);border:1px solid var(--line);border-radius:14px;margin-bottom:16px;overflow:hidden}
+details.accordion>summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;gap:11px;font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--blue-purple);font-weight:700}
 details.accordion>summary::-webkit-details-marker{display:none}
 details.accordion>summary .chev{display:inline-block;font-size:11px;color:var(--electric-purple);transition:transform .15s ease;flex:0 0 auto}
 details.accordion[open]>summary .chev{transform:rotate(90deg)}
 details.accordion>summary .acc-teaser{text-transform:none;letter-spacing:0;color:var(--muted);font-weight:600;font-size:12.5px;margin-left:auto;text-align:right}
-details.accordion .acc-body{padding:0 20px 20px}
+details.accordion .acc-body{padding:20px 22px 24px}
 details.accordion[open]>summary{border-bottom:1px solid var(--line)}
 
-.el-row{display:flex;align-items:center;gap:14px;margin-bottom:10px}
-.el-row:last-child{margin-bottom:0}
+.sc-item{padding:14px 0;border-bottom:1px dashed var(--line)}
+.sc-item:first-child{padding-top:0}
+.sc-item:last-child{padding-bottom:0;border-bottom:none}
+.el-row{display:flex;align-items:center;gap:14px}
 .el-name{flex:0 0 160px;font-size:12.5px;font-weight:600;line-height:1.35}
 .el-bar-track{flex:1;height:10px;background:var(--line);border-radius:6px;overflow:hidden}
 .el-bar-fill{height:100%;background:var(--grad);border-radius:6px;width:0;transition:width .8s ease}
 .el-bar-fill.low{background:linear-gradient(90deg,#f59e0b,#dc2626)}
 .el-score{flex:0 0 30px;text-align:right;font-weight:800;font-size:14.5px;color:var(--tech-indigo)}
 .el-conf{flex:0 0 60px;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--muted);text-align:right}
-.el-reason{font-size:12px;color:var(--muted);margin:2px 0 12px 0;padding-left:2px}
+.el-reason{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:8px;padding-left:2px}
 
-.attrib{font-size:11px;color:var(--muted);margin-top:2px;font-style:italic}
+.attrib{font-size:11px;color:var(--muted);margin-top:6px;font-style:italic}
 
 .bullet-list{list-style:none}
-.bullet-list li{font-size:13.5px;color:var(--ink-soft);padding:9px 0;border-bottom:1px dashed var(--line)}
-.bullet-list li:last-child{border-bottom:none}
+.bullet-list li{font-size:13.5px;color:var(--ink-soft);line-height:1.55;padding:13px 0;border-bottom:1px dashed var(--line)}
+.bullet-list li:first-child{padding-top:0}
+.bullet-list li:last-child{border-bottom:none;padding-bottom:0}
 
 .flaglist{list-style:none}
-.flaglist li{font-size:13px;color:var(--ink-soft);padding:8px 0;border-bottom:1px dashed var(--line);display:flex;gap:8px;align-items:flex-start}
-.flaglist li:last-child{border-bottom:none}
+.flaglist li{font-size:13px;color:var(--ink-soft);line-height:1.55;padding:13px 0;border-bottom:1px dashed var(--line);display:flex;gap:10px;align-items:flex-start}
+.flaglist li:first-child{padding-top:0}
+.flaglist li:last-child{border-bottom:none;padding-bottom:0}
 .flaglist li i{margin-top:2px;flex:0 0 auto}
 .flaglist li .flag-body{min-width:0}
 .flag-green i{color:var(--ok)}.flag-yellow i{color:var(--mixed)}.flag-red i{color:var(--flag)}
@@ -169,12 +173,15 @@ function scorecardBars(scorecard){
   if(!scorecard||!scorecard.length) return '<div class="chart-empty">No scorecard generated yet.</div>';
   return scorecard.map(c=>{
     const p=Math.round((c.score/5)*100);
-    return `<div class="el-row">
-      <div class="el-name">${esc(titleCase(c.competency))}</div>
-      <div class="el-bar-track"><div class="el-bar-fill ${c.score<3?'low':''}" style="width:${p}%"></div></div>
-      <div class="el-score">${c.score}/5</div>
-      <div class="el-conf">${esc(c.confidence||'')}</div>
-    </div><div class="el-reason">${esc(c.reasoning||'')}<div class="attrib">— ${esc(c.evaluatorName||'')}${c.context?', '+esc(c.context):''}</div></div>`;
+    return `<div class="sc-item">
+      <div class="el-row">
+        <div class="el-name">${esc(titleCase(c.competency))}</div>
+        <div class="el-bar-track"><div class="el-bar-fill ${c.score<3?'low':''}" style="width:${p}%"></div></div>
+        <div class="el-score">${c.score}/5</div>
+        <div class="el-conf">${esc(c.confidence||'')}</div>
+      </div>
+      <div class="el-reason">${esc(c.reasoning||'')}<div class="attrib">— ${esc(c.evaluatorName||'')}${c.context?', '+esc(c.context):''}</div></div>
+    </div>`;
   }).join('');
 }
 
