@@ -72,6 +72,21 @@ CREATE TABLE IF NOT EXISTS final_summaries (
 CREATE INDEX IF NOT EXISTS idx_final_summaries_candidate
   ON final_summaries(candidate_id, created_at DESC);
 
+-- Manually entered notes — things a recruiter knows (e.g. from the "Chat
+-- with Jess" conversation itself) that the automated pipeline can't derive
+-- from Ashby scorecards. Append-only like the generated tables; "current"
+-- for a given note_type = the latest row per (candidate_id, note_type).
+CREATE TABLE IF NOT EXISTS manual_notes (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  candidate_id INTEGER NOT NULL REFERENCES candidates(id),
+  note_type    TEXT NOT NULL,        -- e.g. "employment_history"
+  content_json TEXT NOT NULL,
+  added_by     TEXT,                 -- who entered it, if known
+  created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_manual_notes_candidate_type
+  ON manual_notes(candidate_id, note_type, created_at DESC);
+
 -- Cron bookkeeping, one row per pipeline key.
 CREATE TABLE IF NOT EXISTS poll_state (
   pipeline_key TEXT PRIMARY KEY,

@@ -1,6 +1,6 @@
 import { BASE_SYSTEM_PROMPT, candidateContextBlock } from './shared.js';
 
-export const version = 'synthesis.v4';
+export const version = 'synthesis.v5';
 
 export function buildPrompt(dossier, competencyKeys, { stageEvaluations }) {
   const system = `${BASE_SYSTEM_PROMPT}
@@ -42,6 +42,11 @@ Formatting rules (follow all of them):
     of the internal recommendation label, inside executiveSummary or finalRecommendationReasoning — that label
     is for the UI's badge, not for prose a reader sees. Describe the situation in plain language instead (e.g.
     "a bet-on-trajectory candidate" is fine and encouraged; quoting the label itself is not).
+11. employmentHistoryExtract: the feedback form now has a dedicated section for this (fields like "Employment
+    History", "Motivation for Job Search", "AI Experience", "Availability" or equivalent) — check
+    fields[].title in the feedback JSON below for those. If present, extract it faithfully and attribute each
+    part to who answered it. If those fields are absent (most candidates evaluated before this form section
+    existed), set found=false and every array empty — do not backfill from casual mentions elsewhere.
 
 Only state what the feedback below actually supports — never invent a quote, a name, or an outcome.`;
 

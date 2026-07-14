@@ -7,6 +7,8 @@ import {
   getStageEvaluationHistory,
   getLatestFinalSummary,
   getLatestSnapshot,
+  insertManualNote,
+  getLatestManualNote,
 } from './db/repository.js';
 
 export { CandidateEvaluationWorkflow } from './evaluation/workflow.js';
@@ -59,7 +61,24 @@ async function getCandidateDetail(env, id) {
   }
   const finalSummary = await getLatestFinalSummary(env.DB, id);
 
-  return { candidate, stageEvaluations, stageHistory, finalSummary };
+  // A manually-entered note (from a recruiter conversation) always wins —
+  // it's verified, not inferred. Otherwise fall back to what the synthesis
+  // step extracted from the feedback form's employment-history questions,
+  // if those were asked and answered for this candidate. Otherwise null,
+  // so the UI can show "we're still collecting this" instead of a blank.
+  const manualNote = await getLatestManualNote(env.DB, id, 'employment_history');
+  let employmentHistory = null;
+  let employmentHistorySource = null;
+  if (manualNote) {
+    employmentHistory = manualNote.content;
+    employmentHistorySource = 'manual';
+  } else if (finalSummary?.output?.employmentHistoryExtract?.found) {
+    const { found, ...rest } = finalSummary.output.employmentHistoryExtract;
+    employmentHistory = rest;
+    employmentHistorySource = 'auto';
+  }
+
+  return { candidate, stageEvaluations, stageHistory, finalSummary, employmentHistory, employmentHistorySource };
 }
 
 // Manual regenerate: rebuilds a minimal Ashby application shape from the
@@ -95,6 +114,7 @@ export default {
     }
 
     const candidateMatch = url.pathname.match(/^\/api\/candidates\/([^/]+)(\/regenerate)?$/);
+    const manualNoteMatch = url.pathname.match(/^\/api\/candidates\/([^/]+)\/manual-notes\/([^/]+)$/);
 
     if (url.pathname === '/api/candidates' && request.method === 'GET') {
       return json({ candidates: await listCandidates(env, url) });
@@ -110,6 +130,23 @@ export default {
       const result = await regenerateCandidate(env, candidateMatch[1]);
       if (!result) return json({ error: 'Not found' }, 404);
       return json({ started: true, ...result });
+    }
+
+    // Manually entered data (e.g. employment history from a recruiter
+    // conversation) that the Ashby-driven pipeline has no way to discover.
+    // Append-only like everything else — POSTing again adds a new version,
+    // the latest always wins for display.
+    if (manualNoteMatch && request.method === 'POST') {
+      const candidate = await getCandidateById(env.DB, manualNoteMatch[1]);
+      if (!candidate) return json({ error: 'Not found' }, 404);
+      const body = await request.json().catch(() => null);
+      if (!body) return json({ error: 'Expected a JSON body' }, 400);
+      const id = await insertManualNote(env.DB, {
+        candidateId: candidate.id,
+        noteType: manualNoteMatch[2],
+        content: body,
+      });
+      return json({ id });
     }
 
     return json({ error: 'Not found' }, 404);

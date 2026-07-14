@@ -37,6 +37,37 @@ export function buildSynthesisTool(competencyKeys) {
           description: 'Job tenure/stability signals — ONLY if explicitly evidenced (e.g. current employer mentioned, notice period, dual employment, history of role changes described). Empty array if the material genuinely says nothing about this — never guess or infer stability from role/seniority alone.',
           items: attributedTextSchema,
         },
+        employmentHistoryExtract: {
+          type: 'object',
+          description: 'Structured employment history — ONLY from explicit, dedicated answers to employment-history questions in the feedback form (fields literally titled things like "Employment History", "Motivation for Job Search", "AI Experience", "Availability" or equivalent). Most candidates evaluated before this form section existed will have none — set found=false and leave every array empty in that case; do not infer this from casual mentions elsewhere (that belongs in employmentStabilityNotes instead) and do not leave found=true with empty data.',
+          properties: {
+            found: { type: 'boolean' },
+            employmentHistory: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  company: { type: 'string' },
+                  current: { type: 'boolean' },
+                  role: { type: 'string' },
+                  tenure: { type: 'string' },
+                  reasonForJoining: { type: 'string' },
+                  reasonForLeaving: { type: 'string' },
+                  roleChanges: { type: 'string' },
+                  description: { type: 'string' },
+                  evaluatorName: { type: 'string', description: 'Who provided this answer, e.g. "Rafael Rovira".' },
+                  context: { type: 'string', description: 'The form field this came from, e.g. "Employment History".' },
+                },
+                required: ['company'],
+              },
+            },
+            careerProgression: { type: 'string' },
+            motivationForJobSearch: { type: 'array', items: { type: 'string' } },
+            aiExperience: { type: 'array', items: { type: 'string' } },
+            availability: { type: 'string' },
+          },
+          required: ['found', 'employmentHistory', 'motivationForJobSearch', 'aiExperience'],
+        },
         evidenceTimeline: {
           type: 'array',
           description: 'How the candidate evolved, one entry per completed stage in chronological order.',
@@ -63,8 +94,8 @@ export function buildSynthesisTool(competencyKeys) {
       },
       required: [
         'executiveSummary', 'candidateSummaryBullets', 'confidenceLevel', 'scorecard',
-        'greenFlags', 'yellowFlags', 'redFlags', 'employmentStabilityNotes', 'evidenceTimeline',
-        'openQuestions', 'finalRecommendation', 'finalRecommendationReasoning',
+        'greenFlags', 'yellowFlags', 'redFlags', 'employmentStabilityNotes', 'employmentHistoryExtract',
+        'evidenceTimeline', 'openQuestions', 'finalRecommendation', 'finalRecommendationReasoning',
       ],
     },
   };

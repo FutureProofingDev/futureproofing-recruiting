@@ -102,6 +102,21 @@ export async function getLatestFinalSummary(db, candidateId) {
   return row ? deserializeSummary(row) : null;
 }
 
+export async function insertManualNote(db, { candidateId, noteType, content, addedBy = null }) {
+  const result = await db.prepare(
+    `INSERT INTO manual_notes (candidate_id, note_type, content_json, added_by) VALUES (?, ?, ?, ?)`
+  ).bind(candidateId, noteType, JSON.stringify(content), addedBy).run();
+  return result.meta.last_row_id;
+}
+
+export async function getLatestManualNote(db, candidateId, noteType) {
+  const row = await db.prepare(
+    `SELECT * FROM manual_notes WHERE candidate_id = ? AND note_type = ? ORDER BY created_at DESC LIMIT 1`
+  ).bind(candidateId, noteType).first();
+  if (!row) return null;
+  return { ...row, content: JSON.parse(row.content_json) };
+}
+
 export async function getPollState(db, pipelineKey) {
   return db.prepare(`SELECT * FROM poll_state WHERE pipeline_key = ?`).bind(pipelineKey).first();
 }

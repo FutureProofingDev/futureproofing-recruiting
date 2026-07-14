@@ -12,6 +12,8 @@
 //   GET  /api/candidate-summary?pipeline=X      → list candidates for one pipeline
 //   GET  /api/candidate-summary?id=123          → full detail for one candidate
 //   POST /api/candidate-summary?id=123&action=regenerate → manual re-run
+//   POST /api/candidate-summary?id=123&action=manual-note&noteType=employment_history
+//        (JSON body = the note content) → add/replace a manually-entered note
 
 function corsHeaders() {
   return {
@@ -72,13 +74,28 @@ export async function onRequestPost({ request, env }) {
   const id = url.searchParams.get('id');
   const action = url.searchParams.get('action');
 
-  if (!id || action !== 'regenerate') {
-    return jsonResponse({ error: 'Expected ?id=<candidateId>&action=regenerate' }, 400);
+  if (!id) {
+    return jsonResponse({ error: 'Expected ?id=<candidateId>&action=regenerate|manual-note' }, 400);
   }
 
   try {
-    const data = await callEngine(env, `/api/candidates/${encodeURIComponent(id)}/regenerate`, { method: 'POST' });
-    return jsonResponse(data);
+    if (action === 'regenerate') {
+      const data = await callEngine(env, `/api/candidates/${encodeURIComponent(id)}/regenerate`, { method: 'POST' });
+      return jsonResponse(data);
+    }
+
+    if (action === 'manual-note') {
+      const noteType = url.searchParams.get('noteType');
+      if (!noteType) return jsonResponse({ error: 'Expected ?noteType=' }, 400);
+      const body = await request.json();
+      const data = await callEngine(env, `/api/candidates/${encodeURIComponent(id)}/manual-notes/${encodeURIComponent(noteType)}`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+      return jsonResponse(data);
+    }
+
+    return jsonResponse({ error: 'Unknown action' }, 400);
   } catch (err) {
     return jsonResponse({ error: err.message }, 500);
   }

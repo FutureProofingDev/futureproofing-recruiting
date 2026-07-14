@@ -120,6 +120,25 @@ details.accordion[open]>summary{border-bottom:1px solid var(--line)}
 .qlist li:last-child{border-bottom:none}
 .qlist li i{color:var(--electric-purple);margin-top:2px;flex:0 0 auto}
 
+.eh-pending{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);background:var(--lavender);border-radius:10px;padding:14px 16px}
+.eh-pending i{font-size:17px;color:var(--indigo-light);flex:0 0 auto}
+
+.job-card{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;background:var(--lavender)}
+.job-card:last-of-type{margin-bottom:0}
+.job-head{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.job-company{font-size:14.5px;font-weight:800;color:var(--tech-indigo)}
+.job-current{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:#dcfce7;color:#15803d;padding:2px 9px;border-radius:20px}
+.job-role{font-size:13px;color:var(--ink-soft);font-weight:600;margin-bottom:8px}
+.job-meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:8px}
+.job-detail{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-top:6px}
+.job-detail b{color:var(--tech-indigo);font-weight:700}
+.eh-sub{margin-top:18px}
+.eh-sub h5{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--blue-purple);font-weight:700;margin-bottom:8px}
+.eh-sub p{font-size:13px;color:var(--ink-soft);line-height:1.6}
+.eh-sub ul{list-style:none}
+.eh-sub ul li{font-size:13px;color:var(--ink-soft);line-height:1.6;padding:6px 0 6px 16px;position:relative}
+.eh-sub ul li::before{content:'•';position:absolute;left:0;color:var(--electric-purple)}
+
 .rec-final{border-radius:10px;padding:14px 18px;background:var(--lavender);border-left:3px solid var(--line)}
 .rec-final.proceed{border-left-color:#86efac}
 .rec-final.proceed_with_caution{border-left-color:var(--indigo-light)}
@@ -230,6 +249,45 @@ function stageEvaluationsCard(stageEvaluations){
   </details>`).join('');
 }
 
+// Manually-entered employment history (not derived by the pipeline — see
+// note_type "employment_history" in manual_notes). Rendered as structured
+// cards, not the generic attributed-bullet accordions.
+function employmentHistoryCard(eh, source){
+  if(!eh){
+    return `<div class="card">
+      <div class="sec-title">Employment History</div>
+      <div class="eh-pending"><i class="ti ti-clock-hour-4"></i> We're still collecting this — employment-history questions were recently added to the feedback form, so this should populate automatically for upcoming candidates.</div>
+    </div>`;
+  }
+  const companies=(eh.employmentHistory||[]).map(c=>`
+    <div class="job-card">
+      <div class="job-head">
+        <span class="job-company">${esc(c.company)}</span>
+        ${c.current?'<span class="job-current">Current</span>':''}
+      </div>
+      ${c.role?`<div class="job-role">${esc(c.role)}</div>`:''}
+      ${c.tenure?`<div class="job-meta"><i class="ti ti-calendar"></i> ${esc(c.tenure)}</div>`:''}
+      ${c.reasonForJoining?`<div class="job-detail"><b>Why he joined:</b> ${esc(c.reasonForJoining)}</div>`:''}
+      ${c.reasonForLeaving?`<div class="job-detail"><b>Reason for leaving:</b> ${esc(c.reasonForLeaving)}</div>`:''}
+      ${c.roleChanges?`<div class="job-detail"><b>Role changes:</b> ${esc(c.roleChanges)}</div>`:''}
+      ${c.description?`<div class="job-detail">${esc(c.description)}</div>`:''}
+      ${c.status?`<div class="job-detail" style="color:var(--mixed)"><i class="ti ti-help-circle"></i> ${esc(c.status)}</div>`:''}
+      ${c.evaluatorName?`<div class="attrib">— ${esc(c.evaluatorName)}${c.context?', '+esc(c.context):''}</div>`:''}
+    </div>`).join('');
+
+  const listBlock=(title,items)=> (items&&items.length) ? `<div class="eh-sub"><h5>${esc(title)}</h5><ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>` : '';
+  const badge = source==='manual' ? 'Manually added' : 'From feedback form';
+
+  return `<div class="card">
+    <div class="sec-title">Employment History <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px">${badge}</span></div>
+    ${companies}
+    ${eh.careerProgression?`<div class="eh-sub"><h5>Career Progression</h5><p>${esc(eh.careerProgression)}</p></div>`:''}
+    ${listBlock('Motivation for Job Search', eh.motivationForJobSearch)}
+    ${listBlock('AI Experience', eh.aiExperience)}
+    ${eh.availability?`<div class="eh-sub"><h5>Availability</h5><p>${esc(eh.availability)}</p></div>`:''}
+  </div>`;
+}
+
 function renderList(){
   const main=document.getElementById('main');
   if(!LIST.length){
@@ -298,6 +356,8 @@ function renderDetail(){
     </div>
 
     ${execCard}
+
+    ${employmentHistoryCard(DETAIL.employmentHistory, DETAIL.employmentHistorySource)}
 
     <details class="accordion">
       <summary><span class="chev">▶</span> Summary <span class="acc-teaser">${(out?.candidateSummaryBullets||[]).length} points</span></summary>
