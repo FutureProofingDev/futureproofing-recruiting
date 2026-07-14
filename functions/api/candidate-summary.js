@@ -11,6 +11,7 @@
 //   GET  /api/candidate-summary                → list candidates (all pipelines)
 //   GET  /api/candidate-summary?pipeline=X      → list candidates for one pipeline
 //   GET  /api/candidate-summary?id=123          → full detail for one candidate
+//   GET  /api/candidate-summary?id=123&action=resume → 302 redirect to a freshly-signed resume URL
 //   POST /api/candidate-summary?id=123&action=regenerate → manual re-run
 //   POST /api/candidate-summary?id=123&action=manual-note&noteType=employment_history
 //        (JSON body = the note content) → add/replace a manually-entered note
@@ -55,8 +56,13 @@ export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const id = url.searchParams.get('id');
   const pipeline = url.searchParams.get('pipeline');
+  const action = url.searchParams.get('action');
 
   try {
+    if (id && action === 'resume') {
+      const data = await callEngine(env, `/api/candidates/${encodeURIComponent(id)}/resume-url`);
+      return Response.redirect(data.url, 302);
+    }
     if (id) {
       const data = await callEngine(env, `/api/candidates/${encodeURIComponent(id)}`);
       return jsonResponse(data);
@@ -65,7 +71,7 @@ export async function onRequestGet({ request, env }) {
     const data = await callEngine(env, `/api/candidates${qs}`);
     return jsonResponse(data);
   } catch (err) {
-    return jsonResponse({ error: err.message }, 500);
+    return jsonResponse({ error: err.message }, action === 'resume' ? 404 : 500);
   }
 }
 

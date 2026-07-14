@@ -22,14 +22,17 @@ export async function getCandidateProfile(apiKey, candidateId) {
   return data?.results || null;
 }
 
-// Resume: we capture the file reference/handle so it's available to a future
-// text-extraction step. Full PDF/DOCX text extraction is out of scope for
-// v1 (no document-parsing runtime in a Worker) — this keeps the retrieval
-// layer ready for it without blocking the rest of the pipeline on it.
+// Resume: candidate.info's resumeFileHandle is an object ({id, name, handle}),
+// not a bare string — file.info wants just the handle string. Returns a
+// downloadable URL (Ashby: valid ~30 days) so the viewer can link straight
+// to it; full text extraction is a future step, not needed just to attach it.
 export async function getResumeFileInfo(apiKey, resumeFileHandle) {
   if (!resumeFileHandle) return null;
-  const data = await ashbyPostSafe(apiKey, '/file.info', { fileHandle: resumeFileHandle }, null);
-  return data?.results || null;
+  const handle = typeof resumeFileHandle === 'string' ? resumeFileHandle : resumeFileHandle.handle;
+  if (!handle) return null;
+  const data = await ashbyPostSafe(apiKey, '/file.info', { fileHandle: handle }, null);
+  if (!data?.results) return null;
+  return { name: resumeFileHandle.name || null, ...data.results };
 }
 
 export async function getFeedbackForApplication(apiKey, applicationId) {

@@ -55,6 +55,8 @@ button{font-family:inherit;cursor:pointer}
 .ctx .role{font-size:23px;font-weight:800;letter-spacing:-.4px}
 .ctx .meta{font-size:13px;color:#E6DEF7;margin-top:8px;display:flex;gap:16px;flex-wrap:wrap}
 .ctx .meta span{display:inline-flex;align-items:center;gap:5px}
+.ctx .meta a{display:inline-flex;align-items:center;gap:5px;color:var(--indigo-light);font-weight:700;text-decoration:none;border-bottom:1px solid rgba(129,140,248,.4)}
+.ctx .meta a:hover{color:#fff;border-bottom-color:#fff}
 .ctx-score{text-align:right}
 .ctx-score .conf-lbl{font-size:13px;color:#E6DEF7;font-weight:700}
 .ctx-score .lbl{font-size:11px;color:var(--indigo-light);text-transform:uppercase;letter-spacing:.6px;margin-top:6px}
@@ -348,6 +350,7 @@ function renderDetail(){
           <span><i class="ti ti-mail"></i> ${esc(c.email||'—')}</span>
           <span><i class="ti ti-map-pin"></i> ${esc(c.current_stage||'—')}</span>
           <span><i class="ti ti-clock"></i> Updated ${fmtDate(c.updated_at)}</span>
+          ${DETAIL.resumeName ? `<a href="${API}?id=${encodeURIComponent(c.id)}&action=resume" target="_blank" rel="noopener"><i class="ti ti-file-text"></i> ${esc(DETAIL.resumeName)}</a>` : ''}
         </div>
       </div>
       <div class="ctx-score">

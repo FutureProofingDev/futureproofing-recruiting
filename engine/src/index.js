@@ -1,5 +1,6 @@
 import { pollAllPipelines } from './poll.js';
 import { PIPELINES } from './pipelines/index.js';
+import { getCandidateProfile, getResumeFileInfo } from './ashby/collectors.js';
 import {
   listCandidatesByPipeline,
   getCandidateById,
@@ -78,7 +79,25 @@ async function getCandidateDetail(env, id) {
     employmentHistorySource = 'auto';
   }
 
-  return { candidate, stageEvaluations, stageHistory, finalSummary, employmentHistory, employmentHistorySource };
+  // Only the filename comes from the cached snapshot (that never expires);
+  // the actual download URL is fetched fresh on demand via /resume-url,
+  // since Ashby's signed link is only valid ~30 minutes.
+  const snapshot = await getLatestSnapshot(env.DB, id);
+  const resumeName = snapshot?.payload?.resume?.name || null;
+
+  return { candidate, stageEvaluations, stageHistory, finalSummary, employmentHistory, employmentHistorySource, resumeName };
+}
+
+// Ashby's file.info URL is a signed S3 link valid for only ~30 minutes —
+// far too short to cache in the dossier snapshot and expect it to still
+// work when someone clicks "View Resume" later. Fetch a fresh one on demand
+// instead, right when it's actually needed.
+async function getFreshResumeUrl(env, id) {
+  const candidate = await getCandidateById(env.DB, id);
+  if (!candidate?.ashby_candidate_id) return null;
+  const profile = await getCandidateProfile(env.ASHBY_API_KEY, candidate.ashby_candidate_id);
+  if (!profile?.resumeFileHandle) return null;
+  return getResumeFileInfo(env.ASHBY_API_KEY, profile.resumeFileHandle);
 }
 
 // Manual regenerate: rebuilds a minimal Ashby application shape from the
@@ -115,9 +134,16 @@ export default {
 
     const candidateMatch = url.pathname.match(/^\/api\/candidates\/([^/]+)(\/regenerate)?$/);
     const manualNoteMatch = url.pathname.match(/^\/api\/candidates\/([^/]+)\/manual-notes\/([^/]+)$/);
+    const resumeMatch = url.pathname.match(/^\/api\/candidates\/([^/]+)\/resume-url$/);
 
     if (url.pathname === '/api/candidates' && request.method === 'GET') {
       return json({ candidates: await listCandidates(env, url) });
+    }
+
+    if (resumeMatch && request.method === 'GET') {
+      const resume = await getFreshResumeUrl(env, resumeMatch[1]);
+      if (!resume) return json({ error: 'No resume on file' }, 404);
+      return json(resume);
     }
 
     if (candidateMatch && !candidateMatch[2] && request.method === 'GET') {
