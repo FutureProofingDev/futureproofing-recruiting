@@ -140,6 +140,12 @@ export default {
       return json({ candidates: await listCandidates(env, url) });
     }
 
+    // Manual poll trigger — same logic as the cron, useful right after
+    // registering a new pipeline/job match instead of waiting up to 10 min.
+    if (url.pathname === '/api/poll-now' && request.method === 'POST') {
+      return json({ result: await pollAllPipelines(env) });
+    }
+
     if (resumeMatch && request.method === 'GET') {
       const resume = await getFreshResumeUrl(env, resumeMatch[1]);
       if (!resume) return json({ error: 'No resume on file' }, 404);

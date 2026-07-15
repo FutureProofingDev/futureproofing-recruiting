@@ -7,11 +7,15 @@ export const aiEngineerPipeline = {
   key: 'ai-engineer',
   label: 'AI Engineer',
 
-  // Matches the job.list title, same heuristic already used in
-  // ../../functions/api/report.js and talent.js.
+  // Matches the job.list title. Covers both the "AI Engineer" and "Applied
+  // AI/ML Engineer" job postings — same interview process, scorecard, and
+  // competencies for both, just a different official title in Ashby.
   matchesJob(jobTitle) {
     const t = (jobTitle || '').toLowerCase();
-    return t.includes('ai engineer') || (t.includes('ai') && t.includes('software engineer'));
+    return t.includes('ai engineer') ||
+           t.includes('ai/ml engineer') ||
+           t.includes('ai / ml engineer') ||
+           (t.includes('ai') && t.includes('software engineer'));
   },
 
   // The stage whose arrival kicks off the whole evaluation run.
