@@ -34,6 +34,13 @@ button{font-family:inherit;cursor:pointer}
 
 .shell{max-width:1240px;margin:0 auto;display:flex;gap:0;min-height:calc(100vh - 60px)}
 .sidebar{flex:0 0 300px;border-right:1px solid var(--line);padding:20px 12px;background:#FBFAFF}
+.role-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:0 8px;margin-bottom:16px}
+.role-tab{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--ink-soft);display:inline-flex;align-items:center;gap:6px}
+.role-tab:hover{border-color:var(--blue-purple);color:var(--tech-indigo)}
+.role-tab.active{background:var(--grad);color:#fff;border-color:transparent}
+.role-tab .rt-count{font-size:10.5px;font-weight:700;opacity:.7}
+.role-tab.active .rt-count{opacity:.95}
+
 .side-label{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--blue-purple);font-weight:700;margin:0 8px 12px}
 .person{display:flex;align-items:center;gap:11px;padding:11px 10px;border-radius:11px;cursor:pointer;margin-bottom:3px;transition:background .15s;border:none;background:none;width:100%;text-align:left}
 .person:hover{background:var(--lavender)}
@@ -179,7 +186,7 @@ details.stage-raw pre{font-size:11px;color:var(--ink-soft);background:var(--lave
 
 <script>
 const API = '/api/candidate-summary';
-let LIST = [], selectedId = null, DETAIL = null;
+let LIST = [], selectedId = null, DETAIL = null, selectedRole = null, ROLE_LIST = [];
 
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function initials(name){return (name||'?').split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
@@ -290,6 +297,27 @@ function employmentHistoryCard(eh, source){
   </div>`;
 }
 
+// Tabs to filter the sidebar by the real Ashby job title (e.g. "AI Engineer"
+// vs "Applied AI/ML Engineer") — several titles can share one evaluation
+// pipeline, so this filters on jobTitle, not pipelineKey. Hidden entirely
+// when only one role is present.
+function roleTabsHtml(){
+  const roles=[...new Set(LIST.map(c=>c.jobTitle).filter(Boolean))].sort();
+  ROLE_LIST=roles;
+  if(roles.length<2) return '';
+  const tabs=[{label:'All',idx:-1,count:LIST.length}, ...roles.map((r,i)=>({label:r,idx:i,count:LIST.filter(c=>c.jobTitle===r).length}))];
+  return `<div class="role-tabs">${tabs.map(t=>{
+    const active=(selectedRole===null&&t.idx===-1)||selectedRole===t.label;
+    return `<button class="role-tab ${active?'active':''}" onclick="pickRole(${t.idx})">${esc(t.label)}<span class="rt-count">${t.count}</span></button>`;
+  }).join('')}</div>`;
+}
+
+function pickRole(idx){
+  selectedRole = idx===-1 ? null : ROLE_LIST[idx];
+  selectedId = null;
+  renderList();
+}
+
 function renderList(){
   const main=document.getElementById('main');
   if(!LIST.length){
@@ -298,9 +326,10 @@ function renderList(){
       <p>Nobody has reached the "Chat with Jess" stage since this engine started polling.</p></div>`;
     return;
   }
-  if(selectedId==null) selectedId=LIST[0].id;
+  const visible = selectedRole ? LIST.filter(c=>c.jobTitle===selectedRole) : LIST;
+  if(selectedId==null || !visible.some(c=>c.id===selectedId)) selectedId = visible[0]?.id ?? null;
 
-  const items=LIST.map(c=>{
+  const items=visible.map(c=>{
     const rec=c.recommendation||'none';
     return `<button class="person ${c.id===selectedId?'active':''}" onclick="pick(${c.id})">
       <span class="av">${esc(initials(c.name))}</span>
@@ -313,7 +342,8 @@ function renderList(){
 
   main.innerHTML=`<div class="shell">
     <nav class="sidebar">
-      <div class="side-label">Candidates (${LIST.length})</div>
+      ${roleTabsHtml()}
+      <div class="side-label">Candidates (${visible.length})</div>
       ${items}
     </nav>
     <main class="stage" id="detailPane">
