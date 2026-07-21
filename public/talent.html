@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FutureProofing · Onboarding & HR</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.1.0/dist/tabler-icons.min.css">
 <style>
 :root{
@@ -33,6 +34,55 @@ button{font-family:inherit;cursor:pointer}
 .refresh.spinning i{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* Tab bar */
+.tabbar{background:var(--white);border-bottom:1px solid var(--line)}
+.tabbar-inner{max-width:1240px;margin:0 auto;padding:0 24px;display:flex;gap:4px}
+.tab{background:none;border:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:14px 16px;display:inline-flex;align-items:center;gap:7px;border-bottom:2.5px solid transparent;margin-bottom:-1px}
+.tab i{font-size:17px}
+.tab:hover{color:var(--ink-soft)}
+.tab.active{color:var(--tech-indigo);border-bottom-color:var(--blue-purple)}
+
+/* Referrals view */
+.refwrap{max-width:1240px;margin:0 auto;padding:22px 24px}
+.ref-note{display:flex;gap:9px;align-items:flex-start;background:#fbf5ff;border:1px solid #E9D5FF;border-radius:11px;padding:12px 15px;font-size:13px;color:var(--ink-soft);margin-bottom:16px;line-height:1.5}
+.ref-note i{color:var(--electric-purple);font-size:17px;margin-top:1px;flex:0 0 auto}
+.ref-row{display:flex;align-items:center;gap:13px;padding:11px 4px;border-bottom:1px solid var(--line)}
+.ref-row:last-child{border-bottom:none}
+.ref-row.zero{opacity:.5}
+.ref-row.zero .ref-count{color:var(--muted)}
+.ref-rank{width:22px;font-weight:800;font-size:14px;color:var(--muted);text-align:center;flex:0 0 auto}
+.ref-name{flex:0 0 210px;font-size:14px;font-weight:600;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ref-bar{flex:1;height:11px;background:var(--lavender);border-radius:6px;overflow:hidden}
+.ref-fill{height:100%;background:var(--grad);border-radius:6px;transition:width .6s ease}
+.ref-count{flex:0 0 30px;text-align:right;font-weight:800;font-size:15px;color:var(--tech-indigo)}
+@media(max-width:560px){.ref-name{flex-basis:110px}}
+.rt-wrap{overflow-x:auto}
+.reftable{min-width:660px}
+.rt-head,.rt-row{display:grid;grid-template-columns:1.5fr 1.2fr 1.3fr .9fr .9fr;gap:12px;align-items:center;padding:10px 4px}
+.rt-head{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line)}
+.rt-row{border-bottom:1px solid var(--line);font-size:13px}
+.rt-row:last-child{border-bottom:none}
+.rt-cand{font-weight:700;color:var(--tech-indigo);display:flex;align-items:center;gap:6px}
+.rt-li{color:#0a66c2;font-size:15px;text-decoration:none;flex:0 0 auto;line-height:1}
+.rt-li:hover{opacity:.7}
+.rt-ref,.rt-role{color:var(--ink-soft)}
+.rt-date{color:var(--muted);font-size:12px}
+.rstat{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;display:inline-block}
+.rstat.ok{background:#dcfce7;color:#15803d}
+.rstat.act{background:#e0e7ff;color:#4338ca}
+.rstat.hold{background:#fef3c7;color:#b45309}
+.rstat.rej{background:#fee2e2;color:#b91c1c}
+.rstat.notats{background:#f1f5f9;color:#475569}
+.donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.donut-wrap svg{flex:0 0 auto}
+.donut-legend{flex:1;min-width:170px}
+.dl-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.dl-row:last-child{border-bottom:none}
+.dl-dot{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+.dl-lbl{flex:1;font-size:13.5px;color:var(--ink-soft);font-weight:600}
+.dl-val{font-size:14px;font-weight:800;color:var(--tech-indigo)}
+.dl-pct{font-size:12px;color:var(--muted);width:40px;text-align:right}
+
 /* Summary strip */
 .summary{max-width:1240px;margin:0 auto;padding:22px 24px 4px}
 .dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:13px}
@@ -46,6 +96,17 @@ button{font-family:inherit;cursor:pointer}
 .shell{max-width:1240px;margin:0 auto;display:flex;gap:0;min-height:calc(100vh - 170px)}
 .sidebar{flex:0 0 270px;border-right:1px solid var(--line);padding:20px 12px;background:#FBFAFF}
 .side-label{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--blue-purple);font-weight:700;margin:0 8px 12px}
+.hire-controls{padding:0 4px;margin-bottom:10px}
+.hsearch{display:flex;align-items:center;gap:7px;background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:0 10px;margin-bottom:8px}
+.hsearch i{color:var(--muted);font-size:15px}
+.hsearch input{border:none;outline:none;background:none;font-family:inherit;font-size:13px;padding:9px 0;width:100%;color:var(--ink)}
+.hrow{display:flex;gap:7px;margin-bottom:8px}
+.hrow select{flex:1;min-width:0;font-family:inherit;font-size:11.5px;border:1.5px solid var(--line);border-radius:8px;padding:7px 6px;background:#fff;color:var(--ink-soft);cursor:pointer}
+.hcoach{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-soft);cursor:pointer;padding:2px}
+.hcoach input{accent-color:var(--blue-purple)}
+.legend{display:flex;flex-wrap:wrap;gap:11px;padding:2px 6px 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.legend>span{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);font-weight:600}
+.no-hits{font-size:13px;color:var(--muted);padding:16px 8px;text-align:center}
 .person{display:flex;align-items:center;gap:11px;padding:11px 10px;border-radius:11px;cursor:pointer;margin-bottom:3px;transition:background .15s;border:none;background:none;width:100%;text-align:left}
 .person:hover{background:var(--lavender)}
 .person.active{background:linear-gradient(90deg,#EEF2FF,#FBF5FF);border-left:3px solid var(--blue-purple);padding-left:7px;box-shadow:0 1px 3px rgba(99,102,241,.08)}
@@ -92,7 +153,26 @@ button{font-family:inherit;cursor:pointer}
 /* Competency bars */
 .el-row{display:flex;align-items:center;gap:14px;margin-bottom:15px}
 .el-row:last-child{margin-bottom:0}
-.el-name{flex:0 0 240px;font-size:12.5px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.el-name{flex:0 0 210px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:7px}
+.coach-badge{font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;background:#fee2e2;color:#b91c1c;padding:2px 7px;border-radius:6px;flex:0 0 auto}
+/* collapsible competency groups */
+.cgrp{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;background:#fff}
+.cgrp:last-child{margin-bottom:0}
+.cgrp[open]>.cgrp-head{border-bottom:1px solid var(--line)}
+.cgrp-head{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 15px;background:#FBFAFF;user-select:none}
+.cgrp-head::-webkit-details-marker{display:none}
+.cgrp-chev{font-size:16px;color:var(--muted);transition:transform .2s;flex:0 0 auto}
+.cgrp[open] .cgrp-chev{transform:rotate(90deg)}
+.cgrp-name{flex:1;font-size:13.5px;font-weight:700;color:var(--tech-indigo)}
+.grp-low{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;background:#fef3c7;color:#b45309;padding:2px 8px;border-radius:20px}
+.cgrp-avg{font-size:15px;font-weight:800;color:var(--tech-indigo);min-width:30px;text-align:right}
+.cgrp-body{padding:14px 15px}
+/* coaching summary line */
+.coach-line{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;color:var(--ink-soft);background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:11px 14px;margin-bottom:14px;line-height:1.45}
+.coach-line i{color:var(--electric-purple);font-size:17px;flex:0 0 auto;margin-top:1px}
+.coach-line b{color:var(--deep-violet)}
+.coach-line.ok{background:#f0fdf4;border-color:#bbf7d0;color:var(--muted);font-size:12.5px;padding:9px 13px}
+.coach-line.ok i{color:var(--ok);font-size:15px}
 .el-bar-track{flex:1;height:10px;background:var(--line);border-radius:6px;overflow:hidden}
 .el-bar-fill{height:100%;background:var(--grad);border-radius:6px;width:0;transition:width .8s ease}
 .el-bar-fill.low{background:linear-gradient(90deg,#f59e0b,#dc2626)}
@@ -163,7 +243,9 @@ button{font-family:inherit;cursor:pointer}
 .place-badge{font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;background:var(--lavender);color:var(--tech-indigo);border:1px solid var(--line);display:inline-flex;align-items:center;gap:5px}
 .ob-cols{display:grid;grid-template-columns:1fr 1fr;gap:26px}
 @media(max-width:680px){.ob-cols{grid-template-columns:1fr;gap:18px}}
-.ob-sub{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:12px}
+.ob-sub{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.ob-count{font-size:11px;font-weight:800;color:var(--blue-purple)}
+.ob-hint{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:12px}
 .ms-grid{display:flex;flex-direction:column;gap:9px}
 .ms{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted)}
 .ms i{font-size:18px;color:var(--line)}
@@ -199,13 +281,172 @@ button{font-family:inherit;cursor:pointer}
   </div>
 </div></div>
 
+<div class="tabbar"><div class="tabbar-inner">
+  <button class="tab active" id="tab-talent" onclick="switchTab('talent')"><i class="ti ti-users"></i> Talent</button>
+  <button class="tab" id="tab-referrals" onclick="switchTab('referrals')"><i class="ti ti-user-plus"></i> Referrals</button>
+</div></div>
+
 <div id="summary" class="summary hidden"></div>
 <div id="main"></div>
 <div class="foot" id="foot"></div>
 
 <script>
 const API = '/api/talent';
-let DATA = null, selected = 0;
+let DATA = null, selected = 0, activeTab = 'talent';
+let hireQuery='', hireSort='hired', hireCoach=false, hireOnb='all';
+function normStr(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+
+// Status dot for the hires list: green=on track, orange=needs coaching, gray=not evaluated.
+function statusDot(p){
+  if(!p.evalCount) return {cls:'flat', label:'Not evaluated'};
+  if(p.coaching && p.coaching.length) return {cls:'down', label:'Needs coaching'};
+  return {cls:'up', label:'On track'};
+}
+
+function personMatchesFilters(p){
+  if(hireQuery && !normStr(p.name).includes(normStr(hireQuery))) return false;
+  if(hireCoach && !(p.coaching && p.coaching.length)) return false;
+  if(hireOnb!=='all'){
+    const ob=p.onboarding||{};
+    if(hireOnb==='progress'  && !(ob.matched && ob.pct<100)) return false;
+    if(hireOnb==='complete'  && !(ob.matched && ob.pct>=100)) return false;
+    if(hireOnb==='unmatched' && ob.matched) return false;
+  }
+  return true;
+}
+function renderHireList(){
+  const people=DATA.people||[];
+  let items=people.map((p,i)=>({p,i})).filter(x=>personMatchesFilters(x.p));
+  if(hireSort==='name')  items.sort((a,b)=>a.p.name.localeCompare(b.p.name));
+  else if(hireSort==='onb')   items.sort((a,b)=>((b.p.onboarding&&b.p.onboarding.pct)||0)-((a.p.onboarding&&a.p.onboarding.pct)||0));
+  else if(hireSort==='score') items.sort((a,b)=>((b.p.avgScore)||0)-((a.p.avgScore)||0));
+  const el=document.getElementById('hireList'); if(!el) return;
+  const cnt=document.getElementById('hireCount'); if(cnt) cnt.textContent=items.length;
+  if(!items.length){ el.innerHTML='<div class="no-hits">No matches.</div>'; return; }
+  el.innerHTML=items.map(({p,i})=>{
+    const d=statusDot(p);
+    return `<button class="person ${i===selected?'active':''}" onclick="pick(${i})">
+      <span class="av">${esc(initials(p.name))}</span>
+      <span class="pinfo"><span class="pname">${esc(p.name)}</span>
+      <span class="psub"><span class="dot ${d.cls}" title="${d.label}"></span>${p.evalCount} eval${p.evalCount===1?'':'s'} · onb ${p.onboarding?p.onboarding.pct:0}%</span></span>
+    </button>`;
+  }).join('');
+}
+
+function coachSummary(coaching){
+  if(!coaching||!coaching.length){
+    return `<div class="coach-line ok"><i class="ti ti-circle-check"></i> No coaching focus — all evaluated competencies are healthy.</div>`;
+  }
+  const names=coaching.map(c=>esc(c.short||c.name)).join(', ');
+  return `<div class="coach-line"><i class="ti ti-target-arrow"></i><span><b>${coaching.length} area${coaching.length>1?'s':''} need coaching:</b> ${names}</span></div>`;
+}
+
+function compGroups(groups){
+  if(!groups||!groups.length) return '<div class="chart-empty">No rated attributes yet.</div>';
+  return groups.map(g=>{
+    const items=g.items.map(it=>{
+      const p=pct(it.score);
+      return `<div class="el-row">
+        <span class="el-name" title="${esc(it.name)}">${esc(it.short)}${it.low?'<span class="coach-badge">coach</span>':''}</span>
+        <span class="el-bar-track"><span class="el-bar-fill ${it.low?'low':''}" style="width:${p}%"></span></span>
+        <span class="el-score">${p}</span>
+      </div>`;
+    }).join('');
+    const lowTag=g.lowCount?`<span class="grp-low">${g.lowCount} to coach</span>`:'';
+    return `<details class="cgrp" open>
+      <summary class="cgrp-head"><i class="ti ti-chevron-right cgrp-chev"></i><span class="cgrp-name">${esc(g.category)}</span>${lowTag}<span class="cgrp-avg">${g.avg!=null?pct(g.avg):'—'}</span></summary>
+      <div class="cgrp-body">${items}</div>
+    </details>`;
+  }).join('');
+}
+
+function renderActive(){
+  document.getElementById('tab-talent').classList.toggle('active', activeTab==='talent');
+  document.getElementById('tab-referrals').classList.toggle('active', activeTab==='referrals');
+  if(activeTab==='referrals') renderReferrals(); else render();
+}
+function switchTab(t){ activeTab=t; renderActive(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function donut(segments,total,centerLabel,centerSub){
+  const R=52,C=2*Math.PI*R,cx=70,cy=70,sw=20;
+  let offset=0;
+  const arcs=segments.filter(s=>s.value>0).map(s=>{
+    const len=(s.value/total)*C;
+    const el=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${s.color}" stroke-width="${sw}" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt"/>`;
+    offset+=len; return el;
+  }).join('');
+  return `<svg viewBox="0 0 140 140" width="140" height="140" role="img" aria-label="Referrals by status">
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--lavender)" stroke-width="${sw}"/>
+    ${arcs}
+    <text x="${cx}" y="${cy-1}" text-anchor="middle" font-size="27" font-weight="800" fill="#4C1D95">${centerLabel}</text>
+    <text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="10" fill="#6B6480">${centerSub}</text>
+  </svg>`;
+}
+
+function refStatusClass(s){
+  const x=(s||'').toLowerCase();
+  if(x.includes('not in ats')||x.includes('new')) return 'notats';
+  if(x.includes('hire')) return 'ok';
+  if(x.includes('active')) return 'act';
+  if(x.includes('hold')) return 'hold';
+  if(x.includes('reject')||x.includes('disq')) return 'rej';
+  return 'act';
+}
+
+function renderReferrals(){
+  if(!DATA) return;
+  const r=DATA.referrals||{byPerson:[],records:[],total:0,referrers:0};
+  const sum=document.getElementById('summary');
+  sum.classList.remove('hidden');
+  sum.innerHTML=`<div class="dash-stats">
+    <div class="stat"><div class="stat-l">Total referrals</div><div class="stat-v">${r.total}</div><div class="stat-s">candidates</div></div>
+    <div class="stat"><div class="stat-l">Active</div><div class="stat-v">${r.active!=null?r.active:'—'}</div><div class="stat-s">in process</div></div>
+    <div class="stat"><div class="stat-l">Hired</div><div class="stat-v">${r.hired!=null?r.hired:'—'}</div><div class="stat-s">converted</div></div>
+    <div class="stat"><div class="stat-l">Hire rate</div><div class="stat-v">${r.hireRate!=null?pct(r.hireRate)+'%':'—'}</div><div class="stat-s">hired ÷ total</div></div>
+    <div class="stat"><div class="stat-l">Referrers</div><div class="stat-v">${r.referrers}</div><div class="stat-s">of ${r.roster||r.byPerson.length} on roster</div></div>
+  </div>`;
+
+  const max=Math.max(1,...r.byPerson.map(x=>x.count));
+  const bars=r.byPerson.map((x,i)=>`<div class="ref-row${x.count===0?' zero':''}">
+    <span class="ref-rank">${i+1}</span>
+    <span class="av">${esc(initials(x.referrer))}</span>
+    <span class="ref-name" title="${esc(x.referrer)}">${esc(x.referrer)}</span>
+    <span class="ref-bar"><span class="ref-fill" style="width:${Math.round(x.count/max*100)}%"></span></span>
+    <span class="ref-count">${x.count}</span>
+  </div>`).join('');
+
+  const recs=(r.records||[]);
+  const table=recs.length?`<div class="rt-wrap"><div class="reftable">
+    <div class="rt-head"><span>Candidate</span><span>Referrer</span><span>Role</span><span>Date</span><span>Status</span></div>
+    ${recs.map(x=>{
+      const tip=(x.confidence?x.confidence+' — ':'')+(x.why||'');
+      return `<div class="rt-row">
+      <span class="rt-cand" ${tip?`title="${esc(tip)}"`:''}>${esc(x.candidate)}${x.linkedin?`<a class="rt-li" href="${esc(x.linkedin)}" target="_blank" rel="noopener" title="LinkedIn profile"><i class="ti ti-brand-linkedin"></i></a>`:''}</span>
+      <span class="rt-ref">${esc(x.referrer)}</span>
+      <span class="rt-role">${esc(x.role||'—')}</span>
+      <span class="rt-date">${fmtDate(x.date)}</span>
+      <span><span class="rstat ${refStatusClass(x.status)}" ${x.reason||x.stage?`title="${esc(x.stage||x.reason)}"`:''}>${esc(x.status||'—')}</span></span>
+    </div>`;}).join('')}
+  </div></div>`:'<div class="chart-empty">No referral records yet.</div>';
+
+  const segs=[
+    {label:'Hired',      value:r.hired||0,    color:'#16a34a'},
+    {label:'Active',     value:r.active||0,   color:'#6366F1'},
+    {label:'Not in ATS', value:r.notInAts||0, color:'#64748b'},
+    {label:'On hold',    value:r.onHold||0,   color:'#d97706'},
+    {label:'Rejected',   value:r.rejected||0, color:'#dc2626'},
+  ].filter(s=>s.value>0);
+  const legend=segs.map(s=>`<div class="dl-row"><span class="dl-dot" style="background:${s.color}"></span><span class="dl-lbl">${s.label}</span><span class="dl-val">${s.value}</span><span class="dl-pct">${r.total?Math.round(s.value/r.total*100):0}%</span></div>`).join('');
+
+  document.getElementById('main').innerHTML=`<div class="refwrap">
+    <div class="ref-note"><i class="ti ti-info-circle"></i><div>Live from the <b>referral Google Form</b> + 19 historical referrals. New form submissions appear automatically. Form referrals default to <b>Active</b> (in pipeline); add a candidate email to the form to auto-resolve Hired/Rejected from Ashby.</div></div>
+    <div class="grid2">
+      <div class="card"><div class="sec-title">By status</div><div class="donut-wrap">${donut(segs,r.total||1,r.total,'referrals')}<div class="donut-legend">${legend}</div></div></div>
+      <div class="card"><div class="sec-title">Referrals by person</div>${bars}</div>
+    </div>
+    <div class="card"><div class="sec-title">All referrals (${recs.length})</div>${table}</div>
+  </div>`;
+}
 
 function initials(name){return (name||'?').split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
 function pct(x){return Math.round((x==null?0:x)*100);}
@@ -307,13 +548,18 @@ function techCard(ta){
   if(!ta||!ta.found){
     return `<div class="chart-empty">No tech test / HackerRank result logged in Ashby notes.</div>`;
   }
-  return ta.items.map(it=>`<div class="tassess">
-    <div class="ta-main">
-      ${it.pct!=null?`<span class="ta-pct">${it.pct}%</span>`:'<span class="ta-ico"><i class="ti ti-code"></i></span>'}
-      <div class="ta-txt"><div class="ta-line" title="${esc(it.text)}">${esc(it.text)}</div><div class="ta-date">${fmtDate(it.date)}</div></div>
-    </div>
-    ${it.url?`<a class="ta-link" href="${esc(it.url)}" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> Results</a>`:''}
-  </div>`).join('');
+  return ta.items.map(it=>{
+    let label=(it.text||'').replace(/https?:\/\/\S+/g,'').replace(/\s+/g,' ').trim();
+    if(!label) label='Tech test';
+    if(label.length>56) label=label.slice(0,54)+'…';
+    return `<div class="tassess">
+      <div class="ta-main">
+        ${it.pct!=null?`<span class="ta-pct">${it.pct}%</span>`:'<span class="ta-ico"><i class="ti ti-code"></i></span>'}
+        <div class="ta-txt"><div class="ta-line">${esc(label)}</div><div class="ta-date">${fmtDate(it.date)}</div></div>
+      </div>
+      ${it.url?`<a class="ta-link" href="${esc(it.url)}" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> Results</a>`:''}
+    </div>`;
+  }).join('');
 }
 
 function stepper(ob){
@@ -347,11 +593,13 @@ function stepper(ob){
     </div>
     <div class="ob-cols">
       <div>
-        <div class="ob-sub">Pipeline (Weekly Update Stage)</div>
+        <div class="ob-sub">Pipeline · pre-contract</div>
+        <div class="ob-hint">Sequential steps from onboarding email to signed contract (Notion "Weekly Update Stage").</div>
         <ul class="stepper">${steps}</ul>
       </div>
       <div>
-        <div class="ob-sub">Milestones (${ob.milestonesDone||0}/${ob.milestonesTotal||(ob.milestones||[]).length})</div>
+        <div class="ob-sub">Milestones · post-contract setup <span class="ob-count">${ob.milestonesDone||0}/${ob.milestonesTotal||(ob.milestones||[]).length}</span></div>
+        <div class="ob-hint">Systems &amp; client setup once signed — checked off as completed (Notion "Onboarding Stage").</div>
         ${msHtml}
       </div>
     </div>${warn}`;
@@ -389,16 +637,6 @@ function render(){
     return;
   }
   if(selected>=people.length) selected=0;
-  const list=people.map((p,i)=>{
-    const d=trendDot(p.delta);
-    return `<button class="person ${i===selected?'active':''}" onclick="pick(${i})">
-      <span class="av">${esc(initials(p.name))}</span>
-      <span class="pinfo">
-        <span class="pname">${esc(p.name)}</span>
-        <span class="psub"><span class="dot ${d}"></span>${p.evalCount} eval${p.evalCount===1?'':'s'} · onb ${p.onboarding?p.onboarding.pct:0}%</span>
-      </span>
-    </button>`;
-  }).join('');
 
   const p=people[selected];
   const deltaCls=trendDot(p.delta);
@@ -407,8 +645,27 @@ function render(){
 
   main.innerHTML=`<div class="shell">
     <nav class="sidebar">
-      <div class="side-label">Hires (${people.length})</div>
-      ${list}
+      <div class="side-label">Hires (<span id="hireCount">${people.length}</span>)</div>
+      <div class="hire-controls">
+        <div class="hsearch"><i class="ti ti-search"></i><input id="hireSearch" type="text" placeholder="Search name…" oninput="hireQuery=this.value; renderHireList()"></div>
+        <div class="hrow">
+          <select id="hireSort" onchange="hireSort=this.value; renderHireList()">
+            <option value="hired">Recent hire</option><option value="name">Name A–Z</option>
+            <option value="onb">Onboarding %</option><option value="score">Score</option>
+          </select>
+          <select id="hireOnb" onchange="hireOnb=this.value; renderHireList()">
+            <option value="all">All onboarding</option><option value="progress">In progress</option>
+            <option value="complete">Complete</option><option value="unmatched">Not in Notion</option>
+          </select>
+        </div>
+        <label class="hcoach"><input id="hireCoachChk" type="checkbox" onchange="hireCoach=this.checked; renderHireList()"> Needs coaching only</label>
+      </div>
+      <div class="legend">
+        <span><span class="dot up"></span>On track</span>
+        <span><span class="dot down"></span>Needs coaching</span>
+        <span><span class="dot flat"></span>Not evaluated</span>
+      </div>
+      <div id="hireList"></div>
     </nav>
     <main class="stage">
       <div class="ctx">
@@ -433,15 +690,10 @@ function render(){
         ${lineChart(p.progress)}
       </div>
 
-      <div class="grid2">
-        <div class="card">
-          <div class="sec-title">Evaluated competencies</div>
-          ${compBars(p.competencies)}
-        </div>
-        <div class="card">
-          <div class="sec-title">Coaching focus</div>
-          ${coachList(p.coaching)}
-        </div>
+      <div class="card">
+        <div class="sec-title">Evaluated competencies</div>
+        ${coachSummary(p.coaching)}
+        ${compGroups(p.competencyGroups)}
       </div>
 
       <div class="card">
@@ -460,6 +712,12 @@ function render(){
       </div>
     </main>
   </div>`;
+
+  const q=document.getElementById('hireSearch'); if(q) q.value=hireQuery;
+  const so=document.getElementById('hireSort'); if(so) so.value=hireSort;
+  const on=document.getElementById('hireOnb'); if(on) on.value=hireOnb;
+  const ck=document.getElementById('hireCoachChk'); if(ck) ck.checked=hireCoach;
+  renderHireList();
 }
 
 function pick(i){selected=i;render();window.scrollTo({top:0,behavior:'smooth'});}
@@ -474,10 +732,9 @@ async function load(fresh){
     const res=await fetch(API+(fresh?'?fresh=1':''));
     const json=await res.json();
     if(!res.ok) throw new Error(json.error||('HTTP '+res.status));
-    DATA=json; selected=0; render();
-    const cache=res.headers.get('X-Cache')||'';
+    DATA=json; selected=0; renderActive();
     document.getElementById('foot').textContent=
-      `Updated ${fmtDate(json.generatedAt)} · ${json.summary.notionConnected?'Notion connected':'Notion not connected'} · ${cache}`;
+      `Updated ${fmtDate(json.generatedAt)} · ${json.summary.notionConnected?'Notion connected':'Notion not connected'}`;
   }catch(e){
     document.getElementById('main').innerHTML=`<div class="center-state"><div class="ico"><i class="ti ti-alert-triangle"></i></div>
       <h2>Couldn't load</h2><p>${esc(e.message)}</p>
