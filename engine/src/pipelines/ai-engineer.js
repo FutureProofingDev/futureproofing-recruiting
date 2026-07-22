@@ -58,6 +58,18 @@ export const aiEngineerPipeline = {
       sourceType: 'feedback',
       match: title => /technical interview|tech interview/i.test(title || ''),
     },
+    {
+      key: 'behavioral_culture',
+      label: 'Behavioral & Culture Interview',
+      evalType: 'behavioral_culture',
+      sourceType: 'feedback-matched',
+      // Gabe Murillo's behavioral/culture-fit scorecard — matched by field
+      // composition since Ashby doesn't expose a usable stage title here.
+      matchFeedbackFields(fieldTitles) {
+        return fieldTitles.has('The candidate is a structured communicator.') ||
+               fieldTitles.has('The candidate demonstrates high EQ, passion, and self-awareness');
+      },
+    },
   ],
 
   // Fallback evalType for any completed-stage feedback that doesn't match

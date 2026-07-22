@@ -46,6 +46,17 @@ export function buildStageEvalTool(evalType, competencyKeys) {
       },
       required: ['summary', 'behavioralSignals', 'technicalSignals', 'ownershipSignals', 'evidence', 'updatedScores'],
     },
+    behavioral_culture: {
+      description: 'Structured evaluation of a behavioral / culture-fit interview stage.',
+      properties: {
+        summary: { type: 'string' },
+        behavioralSignals: stringListSchema,
+        cultureFitSignals: stringListSchema,
+        evidence,
+        updatedScores: scores,
+      },
+      required: ['summary', 'behavioralSignals', 'cultureFitSignals', 'evidence', 'updatedScores'],
+    },
     // Fallback for any completed stage that doesn't map to a specific
     // evalType above (e.g. a culture/behavioral round not modeled yet).
     generic_interview: {

@@ -60,21 +60,30 @@ export async function determineStageWork(env, candidateId, pipelineKey, dossier,
   const existingByKey = new Map(existing.map(e => [e.stage_key, e]));
 
   const candidates = [];
-
-  // Pull out any scorecard submissions that are HackerEval-shaped by field
-  // composition (see ai-engineer.js's matchFeedbackFields — Ashby doesn't
-  // expose a usable stage title in this org) before grouping the rest by
-  // title, so they feed the hackereval stage instead of the generic bucket.
-  const techStageDef = pipeline.stages.find(s => s.sourceType === 'techAssessment');
   const matchedFeedbackIds = new Set();
-  let matchedFeedbackItems = [];
-  if (techStageDef?.matchFeedbackFields) {
-    matchedFeedbackItems = (dossier.feedbackSimplified || []).filter((fb, i) => {
+
+  // Stages matched by field composition rather than (unreliable) stage
+  // title — e.g. HackerEval's bare "Score" form, or Gabe Murillo's
+  // behavioral/culture-fit form — pulled out before grouping the rest by
+  // title, so they feed their own stage instead of the generic bucket. A
+  // pipeline can register any number of these (see ai-engineer.js).
+  const fieldMatchedStages = pipeline.stages.filter(s => s.matchFeedbackFields);
+  for (const stageDef of fieldMatchedStages) {
+    const matched = (dossier.feedbackSimplified || []).filter((fb, i) => {
       const titles = new Set((fb.fields || []).map(f => f.title));
-      const isMatch = techStageDef.matchFeedbackFields(titles);
+      const isMatch = stageDef.matchFeedbackFields(titles);
       if (isMatch) matchedFeedbackIds.add(dossier.feedback?.[i]?.id);
       return isMatch;
     });
+    const techNotes = stageDef.sourceType === 'techAssessment' ? (dossier.techAssessment || []) : [];
+    if (matched.length || techNotes.length) {
+      candidates.push({
+        stageKey: stageDef.key,
+        stageName: stageDef.label,
+        evalType: stageDef.evalType,
+        evidence: { techAssessmentItems: techNotes, feedbackItems: matched },
+      });
+    }
   }
 
   const remainingFeedback = (dossier.feedback || []).filter(fb => !matchedFeedbackIds.has(fb.id));
@@ -86,15 +95,6 @@ export async function determineStageWork(env, candidateId, pipelineKey, dossier,
       stageName: stageDef ? stageDef.label : title,
       evalType: stageDef ? stageDef.evalType : pipeline.fallbackEvalType,
       evidence: { feedbackItems: items, stageName: title, transcripts: transcriptsForStage(dossier, title) },
-    });
-  }
-
-  if (techStageDef && (dossier.techAssessment?.length || matchedFeedbackItems.length)) {
-    candidates.push({
-      stageKey: techStageDef.key,
-      stageName: techStageDef.label,
-      evalType: techStageDef.evalType,
-      evidence: { techAssessmentItems: dossier.techAssessment || [], feedbackItems: matchedFeedbackItems },
     });
   }
 

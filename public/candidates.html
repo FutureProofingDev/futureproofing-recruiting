@@ -156,6 +156,9 @@ details.accordion[open]>summary{border-bottom:1px solid var(--line)}
 .eh-sub ul li{font-size:13px;color:var(--ink-soft);line-height:1.6;padding:6px 0 6px 16px;position:relative}
 .eh-sub ul li::before{content:'•';position:absolute;left:0;color:var(--electric-purple)}
 
+.transcript-box{width:100%;min-height:160px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:12.5px;line-height:1.6;color:var(--ink-soft);background:var(--lavender)}
+.transcript-box:focus{outline:none;border-color:var(--blue-purple)}
+
 .rec-final{border-radius:10px;padding:14px 18px;background:var(--lavender);border-left:3px solid var(--line)}
 .rec-final.proceed{border-left-color:#86efac}
 .rec-final.proceed_with_caution{border-left-color:var(--indigo-light)}
@@ -354,6 +357,40 @@ function hackerEvalCard(stageEvaluations){
   </div>`;
 }
 
+// Gabe Murillo's behavioral/culture-fit scorecard (auto-detected, same
+// pattern as HackerEval) plus a transcript the recruiter pastes in directly
+// — there's no Ashby/Drive integration for the transcript, just a plain
+// text box that saves via the same manual-notes mechanism as Employment
+// History.
+function behavioralCultureCard(stageEvaluations, transcript, transcriptUpdatedAt, candidateId){
+  const ev=(stageEvaluations||[]).find(e=>e.stage_key==='behavioral_culture');
+  let evalHtml;
+  if(ev){
+    const o=ev.output||{};
+    const scoreList=(title,items)=>{ items=arr(items); return items.length ? `<div class="eh-sub"><h5>${esc(title)}</h5><ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>` : ''; };
+    const scores=arr(o.updatedScores).map(s=>`<div class="el-row"><div class="el-name">${esc(titleCase(s.competency))}</div><div class="el-bar-track"><div class="el-bar-fill ${s.score<3?'low':''}" style="width:${Math.round((s.score/5)*100)}%"></div></div><div class="el-score">${s.score}/5</div></div>`).join('');
+    evalHtml = `<p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:14px">${esc(o.summary||'')}</p>
+      ${scores}
+      ${scoreList('Behavioral Signals', o.behavioralSignals)}
+      ${scoreList('Culture Fit Signals', o.cultureFitSignals)}`;
+  } else {
+    evalHtml = `<div class="pending-note"><i class="ti ti-hourglass"></i> In process — no behavioral/culture scorecard found yet for this candidate.</div>`;
+  }
+
+  return `<div class="card">
+    <div class="sec-title">Behavioral &amp; Culture Interview ${ev?`<span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px">Generated ${fmtDate(ev.created_at)}</span>`:''}</div>
+    ${evalHtml}
+    <div class="eh-sub">
+      <h5>Interview Transcript</h5>
+      <textarea id="transcriptInput" class="transcript-box" placeholder="Paste the interview transcript here…">${esc(transcript||'')}</textarea>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
+        <button class="regen-btn" id="saveTranscriptBtn" onclick="saveTranscript(${candidateId})"><i class="ti ti-device-floppy"></i>Save Transcript</button>
+        ${transcriptUpdatedAt?`<span style="font-size:11.5px;color:var(--muted)">Last saved ${fmtDate(transcriptUpdatedAt)}</span>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
 // Tabs to filter the sidebar by the real Ashby job title (e.g. "AI Engineer"
 // vs "Applied AI/ML Engineer") — several titles can share one evaluation
 // pipeline, so this filters on jobTitle, not pipelineKey. Hidden entirely
@@ -466,6 +503,8 @@ function renderDetail(){
 
     ${hackerEvalCard(DETAIL.stageEvaluations)}
 
+    ${behavioralCultureCard(DETAIL.stageEvaluations, DETAIL.transcript, DETAIL.transcriptUpdatedAt, c.id)}
+
     <details class="accordion">
       <summary><span class="chev">▶</span> Green Flags <span class="acc-teaser">${nGreen}</span></summary>
       <div class="acc-body">${flagList(out?out.greenFlags:null,'flag-green','ti-circle-check')}</div>
@@ -558,6 +597,27 @@ async function regenerate(){
     alert('Could not start regeneration: '+e.message);
   }finally{
     btn.disabled=false; btn.innerHTML='<i class="ti ti-refresh"></i>Regenerate';
+  }
+}
+
+async function saveTranscript(id){
+  const btn=document.getElementById('saveTranscriptBtn');
+  const input=document.getElementById('transcriptInput');
+  if(!btn||!input) return;
+  const text=input.value;
+  btn.disabled=true; btn.innerHTML='<i class="ti ti-loader-2 spinning"></i>Saving…';
+  try{
+    const res=await fetch(API+'?id='+encodeURIComponent(id)+'&action=manual-note&noteType=interview_transcript',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text}),
+    });
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error||('HTTP '+res.status));
+    await loadDetail(id);
+  }catch(e){
+    alert('Could not save transcript: '+e.message);
+    btn.disabled=false; btn.innerHTML='<i class="ti ti-device-floppy"></i>Save Transcript';
   }
 }
 

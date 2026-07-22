@@ -101,7 +101,14 @@ async function getCandidateDetail(env, id) {
   const salaryNotes = snapshot?.payload?.salaryNotes || [];
   const dataGaps = computeDataGaps(snapshot, stageEvaluations);
 
-  return { candidate, stageEvaluations, stageHistory, finalSummary, employmentHistory, employmentHistorySource, resumeName, salaryNotes, dataGaps };
+  // Recruiters paste this in directly (candidates.html) — there's no Ashby
+  // or Drive integration for it, just the same manual_notes mechanism as
+  // employment history.
+  const transcriptNote = await getLatestManualNote(env.DB, id, 'interview_transcript');
+  const transcript = transcriptNote?.content?.text || null;
+  const transcriptUpdatedAt = transcriptNote?.created_at || null;
+
+  return { candidate, stageEvaluations, stageHistory, finalSummary, employmentHistory, employmentHistorySource, resumeName, salaryNotes, dataGaps, transcript, transcriptUpdatedAt };
 }
 
 // Ashby's file.info URL is a signed S3 link valid for only ~30 minutes —
