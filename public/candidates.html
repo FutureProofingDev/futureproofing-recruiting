@@ -158,6 +158,11 @@ details.accordion[open]>summary{border-bottom:1px solid var(--line)}
 
 .transcript-box{width:100%;min-height:160px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:12.5px;line-height:1.6;color:var(--ink-soft);background:var(--lavender)}
 .transcript-box:focus{outline:none;border-color:var(--blue-purple)}
+.transcript-collapsed{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--lavender)}
+.transcript-collapsed-info{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink-soft)}
+.transcript-collapsed-info i{color:var(--blue-purple);font-size:15px}
+.link-btn{background:none;border:none;padding:4px 2px;font-size:12.5px;font-weight:600;color:var(--blue-purple);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.link-btn:hover{color:var(--deep-violet)}
 
 .rec-final{border-radius:10px;padding:14px 18px;background:var(--lavender);border-left:3px solid var(--line)}
 .rec-final.proceed{border-left-color:#86efac}
@@ -197,7 +202,7 @@ details.stage-raw pre{font-size:11px;color:var(--ink-soft);background:var(--lave
 
 <script>
 const API = '/api/candidate-summary';
-let LIST = [], selectedId = null, DETAIL = null, selectedRole = null, ROLE_LIST = [];
+let LIST = [], selectedId = null, DETAIL = null, selectedRole = null, ROLE_LIST = [], transcriptEditing = false;
 
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 // LLM output isn't hard-schema-validated server-side — an array field can
@@ -377,19 +382,32 @@ function behavioralCultureCard(stageEvaluations, transcript, transcriptUpdatedAt
     evalHtml = `<div class="pending-note"><i class="ti ti-hourglass"></i> In process — no behavioral/culture scorecard found yet for this candidate.</div>`;
   }
 
+  // Once a transcript has been saved, collapse it to a summary line — its
+  // job is to feed the AI evaluation above, not to sit around as a wall of
+  // pasted text. "Edit" re-opens it (e.g. to paste a corrected version).
+  const showEditor = transcriptEditing || !transcript;
+  const transcriptHtml = showEditor ? `
+      <textarea id="transcriptInput" class="transcript-box" placeholder="Paste the interview transcript here…">${esc(transcript||'')}</textarea>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
+        <button class="regen-btn" id="saveTranscriptBtn" onclick="saveTranscript(${candidateId})"><i class="ti ti-device-floppy"></i>Save Transcript</button>
+        ${transcript?`<button class="link-btn" onclick="toggleTranscriptEdit()">Cancel</button>`:''}
+      </div>` : `
+      <div class="transcript-collapsed">
+        <div class="transcript-collapsed-info"><i class="ti ti-file-check"></i>Transcript saved · Last saved ${fmtDate(transcriptUpdatedAt)}</div>
+        <button class="link-btn" onclick="toggleTranscriptEdit()"><i class="ti ti-pencil"></i>Edit</button>
+      </div>`;
+
   return `<div class="card">
     <div class="sec-title">Behavioral &amp; Culture Interview ${ev?`<span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px">Generated ${fmtDate(ev.created_at)}</span>`:''}</div>
     ${evalHtml}
     <div class="eh-sub">
       <h5>Interview Transcript</h5>
-      <textarea id="transcriptInput" class="transcript-box" placeholder="Paste the interview transcript here…">${esc(transcript||'')}</textarea>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
-        <button class="regen-btn" id="saveTranscriptBtn" onclick="saveTranscript(${candidateId})"><i class="ti ti-device-floppy"></i>Save Transcript</button>
-        ${transcriptUpdatedAt?`<span style="font-size:11.5px;color:var(--muted)">Last saved ${fmtDate(transcriptUpdatedAt)}</span>`:''}
-      </div>
+      ${transcriptHtml}
     </div>
   </div>`;
 }
+
+function toggleTranscriptEdit(){ transcriptEditing = !transcriptEditing; renderDetail(); }
 
 // Tabs to filter the sidebar by the real Ashby job title (e.g. "AI Engineer"
 // vs "Applied AI/ML Engineer") — several titles can share one evaluation
@@ -549,7 +567,7 @@ function renderDetail(){
   `;
 }
 
-function pick(id){ selectedId=id; renderList(); }
+function pick(id){ selectedId=id; transcriptEditing=false; renderList(); }
 
 async function loadList(){
   const btn=document.getElementById('refreshBtn');
@@ -614,7 +632,9 @@ async function saveTranscript(id){
     });
     const data=await res.json();
     if(!res.ok) throw new Error(data.error||('HTTP '+res.status));
+    transcriptEditing=false;
     await loadDetail(id);
+    if(data.regenerate) alert('Transcript saved. The behavioral/culture analysis is regenerating in the background — refresh in about a minute to see it reflected.');
   }catch(e){
     alert('Could not save transcript: '+e.message);
     btn.disabled=false; btn.innerHTML='<i class="ti ti-device-floppy"></i>Save Transcript';
