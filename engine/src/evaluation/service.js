@@ -18,6 +18,7 @@ import {
   insertStageEvaluation,
   getLatestFinalSummary,
   insertFinalSummary,
+  getLatestManualNote,
 } from '../db/repository.js';
 
 // Step 1: refresh the candidate row + fetch a full Ashby dossier + cache it.
@@ -76,12 +77,17 @@ export async function determineStageWork(env, candidateId, pipelineKey, dossier,
       return isMatch;
     });
     const techNotes = stageDef.sourceType === 'techAssessment' ? (dossier.techAssessment || []) : [];
-    if (matched.length || techNotes.length) {
+    let transcript = null;
+    if (stageDef.includeManualTranscript) {
+      const note = await getLatestManualNote(env.DB, candidateId, 'interview_transcript');
+      transcript = note?.content?.text || null;
+    }
+    if (matched.length || techNotes.length || transcript) {
       candidates.push({
         stageKey: stageDef.key,
         stageName: stageDef.label,
         evalType: stageDef.evalType,
-        evidence: { techAssessmentItems: techNotes, feedbackItems: matched },
+        evidence: { techAssessmentItems: techNotes, feedbackItems: matched, transcript },
       });
     }
   }

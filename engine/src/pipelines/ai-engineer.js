@@ -63,6 +63,12 @@ export const aiEngineerPipeline = {
       label: 'Behavioral & Culture Interview',
       evalType: 'behavioral_culture',
       sourceType: 'feedback-matched',
+      // The recruiter pastes the interview transcript by hand (no Ashby
+      // Notetaker / Drive integration for it) — see manual_notes table,
+      // noteType 'interview_transcript'. Folding it into this stage's
+      // evidence is what makes saving a new transcript change the input
+      // hash and trigger a re-evaluation.
+      includeManualTranscript: true,
       // Gabe Murillo's behavioral/culture-fit scorecard — matched by field
       // composition since Ashby doesn't expose a usable stage title here.
       matchFeedbackFields(fieldTitles) {

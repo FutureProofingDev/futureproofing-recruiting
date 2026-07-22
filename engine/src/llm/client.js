@@ -74,24 +74,33 @@ export async function generateStructured(env, { system, prompt, tool, model, ret
     }
 
     // Anthropic tool-use is not hard-validated against the schema server-side —
-    // the model can still omit a `required` field, or (seen live: an
-    // "updatedScores" array field came back as an XML-tag-formatted string
-    // instead of a JSON array) get a field's basic type wrong. Treat both as
-    // retryable failures rather than silently shipping broken data the UI
-    // will crash trying to render.
-    const missing = missingRequiredFields(tool.input_schema, toolUse.input);
+    // the model can still omit a `required` field, or get a field's basic
+    // type wrong. Seen live, repeatedly, across multiple evalTypes: instead
+    // of a clean JSON array, an array-typed field comes back as a STRING
+    // containing leaked tool-call XML syntax the model uses internally
+    // (e.g. `"strongAreas": "\n<parameter name=\"strongAreas\">[\"a\",\"b\"]"`,
+    // or `<item>...</item>` bullets). This isn't a one-off flake — it recurred
+    // on 6/6 consecutive attempts in production regardless of prompt wording
+    // or output-length bounding, so instead of just retrying (which reliably
+    // reproduces the same failure), repair() first tries to recover the real
+    // data from the leaked-XML string before falling back to a retry.
+    const repaired = repairArrayFields(tool.input_schema, toolUse.input);
+
+    const missing = missingRequiredFields(tool.input_schema, repaired);
     if (missing.length) {
+      console.error(`[generateStructured:${tool.name}] missing fields ${missing.join(', ')} — raw input: ${JSON.stringify(toolUse.input).slice(0, 4000)}`);
       if (attempt === retries - 1) throw new Error(`Anthropic tool_use response missing required field(s): ${missing.join(', ')}`);
       continue;
     }
 
-    const wrongType = arrayTypeErrors(tool.input_schema, toolUse.input);
+    const wrongType = arrayTypeErrors(tool.input_schema, repaired);
     if (wrongType.length) {
+      console.error(`[generateStructured:${tool.name}] non-array fields ${wrongType.join(', ')} — raw input: ${JSON.stringify(toolUse.input).slice(0, 4000)}`);
       if (attempt === retries - 1) throw new Error(`Anthropic tool_use response has non-array value for field(s) declared as arrays: ${wrongType.join(', ')}`);
       continue;
     }
 
-    return toolUse.input;
+    return repaired;
   }
 }
 
@@ -105,4 +114,59 @@ function arrayTypeErrors(schema, input) {
   return Object.entries(props)
     .filter(([key, propSchema]) => propSchema.type === 'array' && input?.[key] !== undefined && !Array.isArray(input[key]))
     .map(([key]) => key);
+}
+
+// Best-effort recovery for array-typed fields that came back as a string
+// instead of a real array. Returns a shallow copy of `input` with whatever
+// fields could be salvaged replaced by real arrays; fields that can't be
+// salvaged are left as-is so arrayTypeErrors() still catches them.
+function repairArrayFields(schema, input) {
+  const props = (schema && schema.properties) || {};
+  const result = { ...input };
+  for (const [key, propSchema] of Object.entries(props)) {
+    if (propSchema.type !== 'array') continue;
+    const value = result[key];
+    if (Array.isArray(value) || typeof value !== 'string') continue;
+    const recovered = coerceStringToArray(value, propSchema.items);
+    if (recovered) result[key] = recovered;
+  }
+  return result;
+}
+
+function coerceStringToArray(raw, itemSchema) {
+  // The model's leaked syntax looks like `<parameter name="x">...</parameter>`
+  // or a bare opening tag — strip it, keeping whatever real content follows.
+  const s = raw.replace(/<\/?parameter[^>]*>/gi, '\n').trim();
+
+  // Prefer a well-formed JSON array/object embedded in what's left.
+  const bracket = s.match(/\[[\s\S]*\]/);
+  if (bracket) {
+    try {
+      const parsed = JSON.parse(bracket[0]);
+      if (Array.isArray(parsed)) return coerceItemShapes(parsed, itemSchema);
+    } catch { /* fall through */ }
+  }
+  try {
+    const parsed = JSON.parse(s);
+    if (Array.isArray(parsed)) return coerceItemShapes(parsed, itemSchema);
+  } catch { /* fall through */ }
+
+  // Custom `<item>...</item>` bullets — only meaningful for plain-string lists.
+  if (!itemSchema || itemSchema.type !== 'object') {
+    const items = [...s.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(m => m[1].trim()).filter(Boolean);
+    if (items.length) return items;
+    return s ? [s] : [];
+  }
+
+  // Object-shaped items (evidence, scores) with nothing recoverable —
+  // better to return an empty list than fabricate a wrong-shaped object.
+  return [];
+}
+
+function coerceItemShapes(items, itemSchema) {
+  if (!itemSchema || itemSchema.type !== 'object') {
+    return items.map(x => (typeof x === 'string' ? x : JSON.stringify(x)));
+  }
+  const required = itemSchema.required || [];
+  return items.filter(item => item && typeof item === 'object' && required.every(k => item[k] !== undefined));
 }

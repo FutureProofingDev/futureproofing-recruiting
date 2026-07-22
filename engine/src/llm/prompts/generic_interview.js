@@ -1,6 +1,6 @@
 import { BASE_SYSTEM_PROMPT, candidateContextBlock } from './shared.js';
 
-export const version = 'generic_interview.v1';
+export const version = 'generic_interview.v2';
 
 // Fallback for any completed stage whose scorecard doesn't map to a
 // specifically-modeled evalType (e.g. a culture/behavioral round).

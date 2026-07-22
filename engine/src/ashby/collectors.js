@@ -90,7 +90,10 @@ export function extractTechAssessmentNotes(notes) {
 // it as a free-text candidate note. Same regex-extraction shape as
 // extractTechAssessmentNotes, covering English/Spanish/Portuguese phrasing
 // since candidates are LATAM/Brazil-based.
-const SALARY_RE = /salary|compensation|expected\s*(pay|rate|comp)|pretens[aã]o\s*salarial|expectativa\s*salarial|remunera[cç][aã]o|pretensión\s*salarial|\busd\b|\br\$\s?\d|\$\s?\d{3,}/i;
+// "compensa" (not the full "compensation") so common typos like
+// "compensantion" (seen live in an Ashby note) still match; "\d+\s?k\b"
+// so shorthand figures like "$4k-5k" match, not just full digit amounts.
+const SALARY_RE = /salary|compensa|expected\s*(pay|rate|comp)|pretens[aã]o\s*salarial|expectativa\s*salarial|remunera[cç][aã]o|pretensión\s*salarial|\busd\b|\br\$\s?\d|\$\s?\d{3,}|\$?\d+\s?k\b/i;
 
 export function extractSalaryNotes(notes) {
   const items = [];

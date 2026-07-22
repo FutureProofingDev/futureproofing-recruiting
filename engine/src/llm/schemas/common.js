@@ -27,6 +27,17 @@ export function scoreItemSchema(competencyKeys) {
 
 export const stringListSchema = { type: 'array', items: { type: 'string' } };
 
+// Bounded variant — seen live: an unbounded list + evidence array combo
+// pushed a response long enough to run past the token cap and truncate
+// mid-JSON. Capping list length keeps output length predictable.
+export function boundedStringListSchema(maxItems = 5) {
+  return { type: 'array', maxItems, items: { type: 'string' } };
+}
+
+export function boundedEvidenceSchema(maxItems = 4) {
+  return { type: 'array', maxItems, items: evidenceItemSchema };
+}
+
 // Attribution-required variants, used by the synthesis step only (it has
 // access to the real evaluator names + form field titles via
 // dossier.feedbackSimplified — see llm/prompts/synthesis.js). Kept separate

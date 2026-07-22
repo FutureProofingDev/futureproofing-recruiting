@@ -1,6 +1,6 @@
 import { BASE_SYSTEM_PROMPT, candidateContextBlock } from './shared.js';
 
-export const version = 'recruiter_feedback.v1';
+export const version = 'recruiter_feedback.v2';
 
 export function buildPrompt(dossier, competencyKeys, { feedbackItems }) {
   const system = `${BASE_SYSTEM_PROMPT}

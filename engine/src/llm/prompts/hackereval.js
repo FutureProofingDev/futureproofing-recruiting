@@ -1,6 +1,6 @@
 import { BASE_SYSTEM_PROMPT, candidateContextBlock } from './shared.js';
 
-export const version = 'hackereval.v2';
+export const version = 'hackereval.v3';
 
 export function buildPrompt(dossier, competencyKeys, { techAssessmentItems, feedbackItems }) {
   const system = `${BASE_SYSTEM_PROMPT}

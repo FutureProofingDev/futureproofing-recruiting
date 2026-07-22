@@ -1,23 +1,31 @@
-import { evidenceItemSchema, scoreItemSchema, stringListSchema } from './common.js';
+import { scoreItemSchema, boundedStringListSchema, boundedEvidenceSchema } from './common.js';
 
 // One tool schema per evalType, matching the exact fields requested in the
 // brief for that stage type. `competencyKeys` comes from the pipeline
 // config, never hardcoded here.
+//
+// Every list is length-capped (boundedStringListSchema / boundedEvidenceSchema)
+// — seen live: an unbounded set of lists + evidence citations on top of each
+// other produced a response long enough to run past the token cap and
+// truncate mid-JSON, which then failed validation in confusing, inconsistent
+// ways depending on exactly where the cutoff landed. Capping keeps total
+// output length predictable regardless of how much source material exists.
 export function buildStageEvalTool(evalType, competencyKeys) {
-  const scores = { type: 'array', items: scoreItemSchema(competencyKeys) };
-  const evidence = { type: 'array', items: evidenceItemSchema };
+  const scores = { type: 'array', maxItems: competencyKeys.length, items: scoreItemSchema(competencyKeys) };
+  const evidence = boundedEvidenceSchema(4);
+  const list = () => boundedStringListSchema(5);
 
   const shapes = {
     recruiter_feedback: {
       description: 'Structured evaluation of a recruiter interview stage.',
       properties: {
         summary: { type: 'string' },
-        strengths: stringListSchema,
-        concerns: stringListSchema,
+        strengths: list(),
+        concerns: list(),
         evidence,
-        greenFlags: stringListSchema,
-        yellowFlags: stringListSchema,
-        redFlags: stringListSchema,
+        greenFlags: list(),
+        yellowFlags: list(),
+        redFlags: list(),
         suggestedScores: scores,
       },
       required: ['summary', 'strengths', 'concerns', 'evidence', 'greenFlags', 'yellowFlags', 'redFlags', 'suggestedScores'],
@@ -26,9 +34,9 @@ export function buildStageEvalTool(evalType, competencyKeys) {
       description: 'Structured evaluation of a HackerEval / technical-assessment result.',
       properties: {
         technicalSummary: { type: 'string' },
-        strongAreas: stringListSchema,
-        weakAreas: stringListSchema,
-        importantFindings: stringListSchema,
+        strongAreas: list(),
+        weakAreas: list(),
+        importantFindings: list(),
         evidence,
         updatedScores: scores,
       },
@@ -38,9 +46,9 @@ export function buildStageEvalTool(evalType, competencyKeys) {
       description: 'Structured evaluation of a technical interview stage.',
       properties: {
         summary: { type: 'string' },
-        behavioralSignals: stringListSchema,
-        technicalSignals: stringListSchema,
-        ownershipSignals: stringListSchema,
+        behavioralSignals: list(),
+        technicalSignals: list(),
+        ownershipSignals: list(),
         evidence,
         updatedScores: scores,
       },
@@ -50,8 +58,8 @@ export function buildStageEvalTool(evalType, competencyKeys) {
       description: 'Structured evaluation of a behavioral / culture-fit interview stage.',
       properties: {
         summary: { type: 'string' },
-        behavioralSignals: stringListSchema,
-        cultureFitSignals: stringListSchema,
+        behavioralSignals: list(),
+        cultureFitSignals: list(),
         evidence,
         updatedScores: scores,
       },
@@ -63,12 +71,12 @@ export function buildStageEvalTool(evalType, competencyKeys) {
       description: 'Structured evaluation of an interview stage not otherwise modeled.',
       properties: {
         summary: { type: 'string' },
-        strengths: stringListSchema,
-        concerns: stringListSchema,
+        strengths: list(),
+        concerns: list(),
         evidence,
-        greenFlags: stringListSchema,
-        yellowFlags: stringListSchema,
-        redFlags: stringListSchema,
+        greenFlags: list(),
+        yellowFlags: list(),
+        redFlags: list(),
         suggestedScores: scores,
       },
       required: ['summary', 'strengths', 'concerns', 'evidence', 'greenFlags', 'yellowFlags', 'redFlags', 'suggestedScores'],

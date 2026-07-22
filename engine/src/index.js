@@ -127,7 +127,7 @@ async function getFreshResumeUrl(env, id) {
 // candidate row + its last cached dossier, then starts a fresh Workflow run.
 // The collectors re-fetch everything live from Ashby by id — this shape is
 // only a seed, not stale data being reused as the evaluation input.
-async function regenerateCandidate(env, id) {
+async function regenerateCandidate(env, id, { force = true } = {}) {
   const candidate = await getCandidateById(env.DB, id);
   if (!candidate) return null;
   const snapshot = await getLatestSnapshot(env.DB, id);
@@ -143,7 +143,7 @@ async function regenerateCandidate(env, id) {
     currentInterviewStage: { title: snapshot?.payload?.currentStage || candidate.current_stage },
   };
 
-  const instance = await env.EVAL_WORKFLOW.create({ params: { application, pipelineKey: candidate.pipeline_key, force: true } });
+  const instance = await env.EVAL_WORKFLOW.create({ params: { application, pipelineKey: candidate.pipeline_key, force } });
   return { instanceId: instance.id };
 }
 
@@ -201,7 +201,17 @@ export default {
         noteType: manualNoteMatch[2],
         content: body,
       });
-      return json({ id });
+      // The transcript feeds the behavioral/culture-fit evaluation directly
+      // (see pipelines/ai-engineer.js's includeManualTranscript) — trigger a
+      // regenerate so saving it updates that analysis right away instead of
+      // waiting for the next poll or a manual "Regenerate" click. Not
+      // force'd: the input-hash check already re-runs only the stage(s)
+      // whose evidence actually changed.
+      let regenerate = null;
+      if (manualNoteMatch[2] === 'interview_transcript') {
+        regenerate = await regenerateCandidate(env, candidate.id, { force: false });
+      }
+      return json({ id, regenerate });
     }
 
     return json({ error: 'Not found' }, 404);
