@@ -61,11 +61,20 @@ export async function generateStructured(env, { system, prompt, tool, model, ret
     }
 
     // Anthropic tool-use is not hard-validated against the schema server-side —
-    // the model can still omit a `required` field. Treat that as a retryable
-    // failure rather than silently shipping an incomplete summary.
+    // the model can still omit a `required` field, or (seen live: an
+    // "updatedScores" array field came back as an XML-tag-formatted string
+    // instead of a JSON array) get a field's basic type wrong. Treat both as
+    // retryable failures rather than silently shipping broken data the UI
+    // will crash trying to render.
     const missing = missingRequiredFields(tool.input_schema, toolUse.input);
     if (missing.length) {
       if (attempt === retries - 1) throw new Error(`Anthropic tool_use response missing required field(s): ${missing.join(', ')}`);
+      continue;
+    }
+
+    const wrongType = arrayTypeErrors(tool.input_schema, toolUse.input);
+    if (wrongType.length) {
+      if (attempt === retries - 1) throw new Error(`Anthropic tool_use response has non-array value for field(s) declared as arrays: ${wrongType.join(', ')}`);
       continue;
     }
 
@@ -76,4 +85,11 @@ export async function generateStructured(env, { system, prompt, tool, model, ret
 function missingRequiredFields(schema, input) {
   const required = (schema && schema.required) || [];
   return required.filter(key => input == null || input[key] === undefined);
+}
+
+function arrayTypeErrors(schema, input) {
+  const props = (schema && schema.properties) || {};
+  return Object.entries(props)
+    .filter(([key, propSchema]) => propSchema.type === 'array' && input?.[key] !== undefined && !Array.isArray(input[key]))
+    .map(([key]) => key);
 }

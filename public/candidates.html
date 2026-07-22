@@ -197,6 +197,10 @@ const API = '/api/candidate-summary';
 let LIST = [], selectedId = null, DETAIL = null, selectedRole = null, ROLE_LIST = [];
 
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+// LLM output isn't hard-schema-validated server-side — an array field can
+// occasionally come back as something else. Guard every .map() call site
+// against that instead of letting one bad field crash the whole page.
+function arr(x){return Array.isArray(x)?x:[];}
 function initials(name){return (name||'?').split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
 function fmtDate(d){if(!d)return '—';const t=new Date(d);if(isNaN(t))return '—';return t.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
 function recLabel(r){return {proceed:'Proceed',proceed_with_caution:'Proceed — Partner with Senior Engineer',reject:'Not a Fit Right Now'}[r]||'No summary yet';}
@@ -207,7 +211,8 @@ function gapLabels(gaps){return (gaps||[]).map(g=>({salary:'Salary Expectation',
 function titleCase(key){return String(key||'').replace(/[_-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
 
 function scorecardBars(scorecard){
-  if(!scorecard||!scorecard.length) return '<div class="chart-empty">No scorecard generated yet.</div>';
+  scorecard=arr(scorecard);
+  if(!scorecard.length) return '<div class="chart-empty">No scorecard generated yet.</div>';
   return scorecard.map(c=>{
     const p=Math.round((c.score/5)*100);
     return `<div class="sc-item">
@@ -224,13 +229,15 @@ function scorecardBars(scorecard){
 
 // Compact one-line teaser for the collapsed Scorecard summary row.
 function scorecardTeaser(scorecard){
-  if(!scorecard||!scorecard.length) return 'Not generated yet';
+  scorecard=arr(scorecard);
+  if(!scorecard.length) return 'Not generated yet';
   return scorecard.map(c=>`${titleCase(c.competency)} ${c.score}/5`).join(' · ');
 }
 
 // items are {text, evaluatorName, context} objects (attributed).
 function flagList(items, cls, icon){
-  if(!items||!items.length) return '<div class="chart-empty">None noted.</div>';
+  items=arr(items);
+  if(!items.length) return '<div class="chart-empty">None noted.</div>';
   return `<ul class="flaglist">${items.map(f=>`<li class="${cls}"><i class="ti ${icon}"></i>
     <div class="flag-body">${esc(f.text)}<div class="attrib">— ${esc(f.evaluatorName||'')}${f.context?', '+esc(f.context):''}</div></div>
   </li>`).join('')}</ul>`;
@@ -238,12 +245,14 @@ function flagList(items, cls, icon){
 
 // candidateSummaryBullets: {text, evaluatorName, context} objects (attributed).
 function bulletList(items){
-  if(!items||!items.length) return '<div class="chart-empty">No summary bullets generated yet.</div>';
+  items=arr(items);
+  if(!items.length) return '<div class="chart-empty">No summary bullets generated yet.</div>';
   return `<ul class="bullet-list">${items.map(b=>`<li>${esc(b.text)}<div class="attrib">— ${esc(b.evaluatorName||'')}${b.context?', '+esc(b.context):''}</div></li>`).join('')}</ul>`;
 }
 
 function timeline(items){
-  if(!items||!items.length) return '<div class="chart-empty">No stage history yet.</div>';
+  items=arr(items);
+  if(!items.length) return '<div class="chart-empty">No stage history yet.</div>';
   return `<ul class="timeline">${items.map((t,i)=>`<li class="tl-item">
     <div class="tl-dot">${i+1}</div>
     <div class="tl-body">
@@ -255,7 +264,8 @@ function timeline(items){
 }
 
 function questionList(items){
-  if(!items||!items.length) return '<div class="chart-empty">No open questions — prior stages resolved everything they could.</div>';
+  items=arr(items);
+  if(!items.length) return '<div class="chart-empty">No open questions — prior stages resolved everything they could.</div>';
   return `<ul class="qlist">${items.map(q=>`<li><i class="ti ti-help-circle"></i>${esc(q)}</li>`).join('')}</ul>`;
 }
 
@@ -277,7 +287,7 @@ function employmentHistoryCard(eh, source){
       <div class="eh-pending"><i class="ti ti-clock-hour-4"></i> We're still collecting this — employment-history questions were recently added to the feedback form, so this should populate automatically for upcoming candidates.</div>
     </div>`;
   }
-  const companies=(eh.employmentHistory||[]).map(c=>`
+  const companies=arr(eh.employmentHistory).map(c=>`
     <div class="job-card">
       <div class="job-head">
         <span class="job-company">${esc(c.company)}</span>
@@ -293,7 +303,7 @@ function employmentHistoryCard(eh, source){
       ${c.evaluatorName?`<div class="attrib">— ${esc(c.evaluatorName)}${c.context?', '+esc(c.context):''}</div>`:''}
     </div>`).join('');
 
-  const listBlock=(title,items)=> (items&&items.length) ? `<div class="eh-sub"><h5>${esc(title)}</h5><ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>` : '';
+  const listBlock=(title,items)=> { items=arr(items); return items.length ? `<div class="eh-sub"><h5>${esc(title)}</h5><ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>` : ''; };
   const badge = source==='manual' ? 'Manually added' : 'From feedback form';
 
   return `<div class="card">
@@ -309,7 +319,8 @@ function employmentHistoryCard(eh, source){
 // Always-shown — recruiters need to notice immediately if this wasn't
 // collected, not discover it's missing by scrolling around.
 function salaryCard(salaryNotes){
-  if(!salaryNotes||!salaryNotes.length){
+  salaryNotes=arr(salaryNotes);
+  if(!salaryNotes.length){
     return `<div class="card">
       <div class="sec-title">Salary Expectation</div>
       <div class="pending-note"><i class="ti ti-hourglass"></i> Not collected yet — no note mentioning salary/compensation found for this candidate.</div>
@@ -331,8 +342,8 @@ function hackerEvalCard(stageEvaluations){
     </div>`;
   }
   const o=ev.output||{};
-  const scoreList=(title,items)=> (items&&items.length) ? `<div class="eh-sub"><h5>${esc(title)}</h5><ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>` : '';
-  const scores=(o.updatedScores||[]).map(s=>`<div class="el-row"><div class="el-name">${esc(titleCase(s.competency))}</div><div class="el-bar-track"><div class="el-bar-fill ${s.score<3?'low':''}" style="width:${Math.round((s.score/5)*100)}%"></div></div><div class="el-score">${s.score}/5</div></div>`).join('');
+  const scoreList=(title,items)=> { items=arr(items); return items.length ? `<div class="eh-sub"><h5>${esc(title)}</h5><ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>` : ''; };
+  const scores=arr(o.updatedScores).map(s=>`<div class="el-row"><div class="el-name">${esc(titleCase(s.competency))}</div><div class="el-bar-track"><div class="el-bar-fill ${s.score<3?'low':''}" style="width:${Math.round((s.score/5)*100)}%"></div></div><div class="el-score">${s.score}/5</div></div>`).join('');
   return `<div class="card">
     <div class="sec-title">HackerEval Results <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px">Generated ${fmtDate(ev.created_at)}</span></div>
     <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:14px">${esc(o.technicalSummary||'')}</p>
