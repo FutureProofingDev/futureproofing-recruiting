@@ -6,7 +6,14 @@
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
 
-const DEFAULT_MAX_TOKENS = 4096;
+// Seen live: some candidates' evidence is long enough that a detailed,
+// fully-cited structured answer runs past 4096 output tokens, truncating
+// the tool call mid-JSON (which then fails validation below in confusing,
+// inconsistent ways — sometimes as a wrong-typed field, sometimes as a
+// missing one, depending on exactly where the cutoff landed). Doubled as
+// the fix, plus stop_reason is checked explicitly so a real future
+// truncation is diagnosed clearly instead of guessed at again.
+const DEFAULT_MAX_TOKENS = 8192;
 
 // Note: this model rejects an explicit `temperature` override ("temperature
 // is deprecated for this model") — discovered live in production. Determinism
@@ -54,6 +61,12 @@ export async function generateStructured(env, { system, prompt, tool, model, ret
     }
 
     const data = await res.json();
+
+    if (data.stop_reason === 'max_tokens') {
+      if (attempt === retries - 1) throw new Error(`Anthropic response was truncated at max_tokens (${DEFAULT_MAX_TOKENS}) — the tool call never finished`);
+      continue;
+    }
+
     const toolUse = (data.content || []).find(b => b.type === 'tool_use');
     if (!toolUse) {
       if (attempt === retries - 1) throw new Error('Anthropic response did not include the expected tool_use block');
