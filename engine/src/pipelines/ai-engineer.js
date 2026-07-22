@@ -41,7 +41,15 @@ export const aiEngineerPipeline = {
       key: 'hackereval',
       label: 'HackerEval',
       evalType: 'hackereval',
-      sourceType: 'techAssessment', // pulled from dossier.techAssessment (free-text notes), not scorecards
+      sourceType: 'techAssessment', // pulled from dossier.techAssessment (free-text notes) primarily
+      // Some candidates' HackerEval-equivalent lives in a scorecard
+      // submission instead of a free-text note (e.g. Rafael Rovira's bare
+      // "Score" form, or Gabe Murillo's technical-assessment form) —
+      // Ashby doesn't expose a usable stage title in this org, so this
+      // matches by field composition instead.
+      matchFeedbackFields(fieldTitles) {
+        return fieldTitles.has('Score') || fieldTitles.has('Technical Depth & System Understanding');
+      },
     },
     {
       key: 'technical_interview',

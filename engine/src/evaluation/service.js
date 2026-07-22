@@ -61,7 +61,24 @@ export async function determineStageWork(env, candidateId, pipelineKey, dossier,
 
   const candidates = [];
 
-  const feedbackGroups = groupFeedbackByStage(dossier.feedback);
+  // Pull out any scorecard submissions that are HackerEval-shaped by field
+  // composition (see ai-engineer.js's matchFeedbackFields — Ashby doesn't
+  // expose a usable stage title in this org) before grouping the rest by
+  // title, so they feed the hackereval stage instead of the generic bucket.
+  const techStageDef = pipeline.stages.find(s => s.sourceType === 'techAssessment');
+  const matchedFeedbackIds = new Set();
+  let matchedFeedbackItems = [];
+  if (techStageDef?.matchFeedbackFields) {
+    matchedFeedbackItems = (dossier.feedbackSimplified || []).filter((fb, i) => {
+      const titles = new Set((fb.fields || []).map(f => f.title));
+      const isMatch = techStageDef.matchFeedbackFields(titles);
+      if (isMatch) matchedFeedbackIds.add(dossier.feedback?.[i]?.id);
+      return isMatch;
+    });
+  }
+
+  const remainingFeedback = (dossier.feedback || []).filter(fb => !matchedFeedbackIds.has(fb.id));
+  const feedbackGroups = groupFeedbackByStage(remainingFeedback);
   for (const [title, items] of feedbackGroups) {
     const stageDef = pipeline.stages.find(s => s.sourceType === 'feedback' && s.match?.(title));
     candidates.push({
@@ -72,13 +89,12 @@ export async function determineStageWork(env, candidateId, pipelineKey, dossier,
     });
   }
 
-  const techStageDef = pipeline.stages.find(s => s.sourceType === 'techAssessment');
-  if (techStageDef && dossier.techAssessment?.length) {
+  if (techStageDef && (dossier.techAssessment?.length || matchedFeedbackItems.length)) {
     candidates.push({
       stageKey: techStageDef.key,
       stageName: techStageDef.label,
       evalType: techStageDef.evalType,
-      evidence: { techAssessmentItems: dossier.techAssessment },
+      evidence: { techAssessmentItems: dossier.techAssessment || [], feedbackItems: matchedFeedbackItems },
     });
   }
 

@@ -25,6 +25,17 @@ function authorized(request, env) {
   return Boolean(env.ENGINE_INTERNAL_KEY) && request.headers.get('X-Engine-Key') === env.ENGINE_INTERNAL_KEY;
 }
 
+// Critical-but-easy-to-miss data points a recruiter should always be able to
+// see are present or explicitly still pending — surfaced as a red flag in
+// the UI (sidebar dot + a banner on the candidate's own page) rather than
+// silently absent.
+function computeDataGaps(snapshot, stageEvaluations) {
+  const gaps = [];
+  if (!snapshot?.payload?.salaryNotes?.length) gaps.push('salary');
+  if (!stageEvaluations.some(e => e.stage_key === 'hackereval')) gaps.push('hackereval');
+  return gaps;
+}
+
 async function listCandidates(env, url) {
   const pipelineKey = url.searchParams.get('pipeline');
   const pipelines = pipelineKey ? [pipelineKey] : PIPELINES.map(p => p.key);
@@ -34,6 +45,8 @@ async function listCandidates(env, url) {
     const rows = await listCandidatesByPipeline(env.DB, key);
     for (const row of rows) {
       const summary = await getLatestFinalSummary(env.DB, row.id);
+      const snapshot = await getLatestSnapshot(env.DB, row.id);
+      const stageEvaluations = await getLatestStageEvaluations(env.DB, row.id);
       candidates.push({
         id: row.id,
         name: row.name,
@@ -45,6 +58,7 @@ async function listCandidates(env, url) {
         recommendation: summary?.recommendation || null,
         confidence: summary?.confidence || null,
         hasSummary: Boolean(summary),
+        dataGaps: computeDataGaps(snapshot, stageEvaluations),
       });
     }
   }
@@ -84,8 +98,10 @@ async function getCandidateDetail(env, id) {
   // since Ashby's signed link is only valid ~30 minutes.
   const snapshot = await getLatestSnapshot(env.DB, id);
   const resumeName = snapshot?.payload?.resume?.name || null;
+  const salaryNotes = snapshot?.payload?.salaryNotes || [];
+  const dataGaps = computeDataGaps(snapshot, stageEvaluations);
 
-  return { candidate, stageEvaluations, stageHistory, finalSummary, employmentHistory, employmentHistorySource, resumeName };
+  return { candidate, stageEvaluations, stageHistory, finalSummary, employmentHistory, employmentHistorySource, resumeName, salaryNotes, dataGaps };
 }
 
 // Ashby's file.info URL is a signed S3 link valid for only ~30 minutes —

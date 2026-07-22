@@ -86,6 +86,23 @@ export function extractTechAssessmentNotes(notes) {
   return items;
 }
 
+// Salary expectation isn't a structured Ashby field either — recruiters log
+// it as a free-text candidate note. Same regex-extraction shape as
+// extractTechAssessmentNotes, covering English/Spanish/Portuguese phrasing
+// since candidates are LATAM/Brazil-based.
+const SALARY_RE = /salary|compensation|expected\s*(pay|rate|comp)|pretens[aã]o\s*salarial|expectativa\s*salarial|remunera[cç][aã]o|pretensión\s*salarial|\busd\b|\br\$\s?\d|\$\s?\d{3,}/i;
+
+export function extractSalaryNotes(notes) {
+  const items = [];
+  for (const n of notes || []) {
+    const t = noteText(n);
+    if (!t || !SALARY_RE.test(t)) continue;
+    items.push({ date: noteDate(n), text: t.slice(0, 2000) });
+  }
+  items.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+  return items;
+}
+
 export function noteText(note) {
   const raw = note.content || note.note || note.body || note.text || note.value || (typeof note === 'string' ? note : '') || '';
   return String(raw).replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();

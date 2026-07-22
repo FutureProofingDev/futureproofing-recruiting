@@ -10,6 +10,7 @@ import {
   getInterviewsForApplication,
   getNotetakerTranscripts,
   extractTechAssessmentNotes,
+  extractSalaryNotes,
   noteText,
 } from './collectors.js';
 import { simplifyFeedback } from './feedbackFormat.js';
@@ -66,6 +67,7 @@ export async function buildDossier(apiKey, application) {
   )?.url || raw.candidateProfile?.linkedInUrl || null;
 
   const techAssessment = extractTechAssessmentNotes(raw.notes);
+  const salaryNotes = extractSalaryNotes(raw.notes);
   const generalNotes = (raw.notes || [])
     .map(n => ({ text: noteText(n), date: n.createdAt || n.date || null }))
     .filter(n => n.text);
@@ -85,6 +87,7 @@ export async function buildDossier(apiKey, application) {
     // cite who said what instead of summarizing anonymously.
     feedbackSimplified: (raw.feedback || []).map(simplifyFeedback),
     techAssessment,
+    salaryNotes,
     generalNotes,
     interviews: raw.interviews,
     notetakerTranscripts: raw.notetakerTranscripts,

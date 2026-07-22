@@ -46,8 +46,9 @@ button{font-family:inherit;cursor:pointer}
 .person{display:flex;align-items:center;gap:11px;padding:11px 10px;border-radius:11px;cursor:pointer;margin-bottom:3px;transition:background .15s;border:none;background:none;width:100%;text-align:left}
 .person:hover{background:var(--lavender)}
 .person.active{background:linear-gradient(90deg,#EEF2FF,#FBF5FF);border-left:3px solid var(--blue-purple);padding-left:7px;box-shadow:0 1px 3px rgba(99,102,241,.08)}
-.av{width:34px;height:34px;border-radius:50%;background:#EEEDFE;color:var(--tech-indigo);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:0 0 auto}
+.av{width:34px;height:34px;border-radius:50%;background:#EEEDFE;color:var(--tech-indigo);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:0 0 auto;position:relative}
 .person.active .av{background:var(--grad);color:#fff}
+.gap-badge{position:absolute;top:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:var(--flag);border:2px solid var(--white)}
 .person .pinfo{min-width:0;flex:1}
 .person .pname{font-size:13.5px;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .person.active .pname{color:var(--tech-indigo);font-weight:700}
@@ -68,6 +69,12 @@ button{font-family:inherit;cursor:pointer}
 .ctx-score{text-align:right}
 .ctx-score .conf-lbl{font-size:13px;color:#E6DEF7;font-weight:700}
 .ctx-score .lbl{font-size:11px;color:var(--indigo-light);text-transform:uppercase;letter-spacing:.6px;margin-top:6px}
+
+.gap-banner{display:flex;align-items:center;gap:10px;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;border-radius:12px;padding:13px 18px;margin-bottom:18px;font-size:13.5px;font-weight:600}
+.gap-banner i{font-size:19px;flex:0 0 auto}
+
+.pending-note{display:flex;align-items:center;gap:10px;font-size:13px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:13px 16px}
+.pending-note i{font-size:17px;flex:0 0 auto;color:#d97706}
 
 .exec-card{background:linear-gradient(135deg,#FBF5FF,#EEF2FF);border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin-bottom:24px}
 .exec-label{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--blue-purple);font-weight:800;margin-bottom:10px}
@@ -193,6 +200,7 @@ function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;'
 function initials(name){return (name||'?').split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
 function fmtDate(d){if(!d)return '—';const t=new Date(d);if(isNaN(t))return '—';return t.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
 function recLabel(r){return {proceed:'Proceed',proceed_with_caution:'Proceed — Partner with Senior Engineer',reject:'Not a Fit Right Now'}[r]||'No summary yet';}
+function gapLabels(gaps){return (gaps||[]).map(g=>({salary:'Salary Expectation',hackereval:'HackerEval Results'}[g]||g));}
 
 // Competency keys come back from the engine as config keys (e.g. "agentic_coding"),
 // not display labels — title-case them for the UI.
@@ -298,6 +306,43 @@ function employmentHistoryCard(eh, source){
   </div>`;
 }
 
+// Always-shown — recruiters need to notice immediately if this wasn't
+// collected, not discover it's missing by scrolling around.
+function salaryCard(salaryNotes){
+  if(!salaryNotes||!salaryNotes.length){
+    return `<div class="card">
+      <div class="sec-title">Salary Expectation</div>
+      <div class="pending-note"><i class="ti ti-hourglass"></i> Not collected yet — no note mentioning salary/compensation found for this candidate.</div>
+    </div>`;
+  }
+  return `<div class="card">
+    <div class="sec-title">Salary Expectation</div>
+    ${salaryNotes.map(n=>`<div class="job-detail" style="margin-top:0;margin-bottom:10px">${esc(n.text)}<div class="attrib">${fmtDate(n.date)}</div></div>`).join('')}
+  </div>`;
+}
+
+// Always-shown, sourced from the hackereval stage_evaluation if one exists.
+function hackerEvalCard(stageEvaluations){
+  const ev=(stageEvaluations||[]).find(e=>e.stage_key==='hackereval');
+  if(!ev){
+    return `<div class="card">
+      <div class="sec-title">HackerEval Results</div>
+      <div class="pending-note"><i class="ti ti-hourglass"></i> In process — no HackerEval note or scorecard found yet for this candidate.</div>
+    </div>`;
+  }
+  const o=ev.output||{};
+  const scoreList=(title,items)=> (items&&items.length) ? `<div class="eh-sub"><h5>${esc(title)}</h5><ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>` : '';
+  const scores=(o.updatedScores||[]).map(s=>`<div class="el-row"><div class="el-name">${esc(titleCase(s.competency))}</div><div class="el-bar-track"><div class="el-bar-fill ${s.score<3?'low':''}" style="width:${Math.round((s.score/5)*100)}%"></div></div><div class="el-score">${s.score}/5</div></div>`).join('');
+  return `<div class="card">
+    <div class="sec-title">HackerEval Results <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px">Generated ${fmtDate(ev.created_at)}</span></div>
+    <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:14px">${esc(o.technicalSummary||'')}</p>
+    ${scores}
+    ${scoreList('Strong Areas', o.strongAreas)}
+    ${scoreList('Weak Areas', o.weakAreas)}
+    ${scoreList('Important Findings', o.importantFindings)}
+  </div>`;
+}
+
 // Tabs to filter the sidebar by the real Ashby job title (e.g. "AI Engineer"
 // vs "Applied AI/ML Engineer") — several titles can share one evaluation
 // pipeline, so this filters on jobTitle, not pipelineKey. Hidden entirely
@@ -332,8 +377,9 @@ function renderList(){
 
   const items=visible.map(c=>{
     const rec=c.recommendation||'none';
+    const hasGaps=(c.dataGaps||[]).length>0;
     return `<button class="person ${c.id===selectedId?'active':''}" onclick="pick(${c.id})">
-      <span class="av">${esc(initials(c.name))}</span>
+      <span class="av">${esc(initials(c.name))}${hasGaps?'<span class="gap-badge" title="Missing data"></span>':''}</span>
       <span class="pinfo">
         <span class="pname">${esc(c.name||'Unknown')}</span>
         <span class="psub"><span class="dot ${rec}"></span>${esc(c.currentStage||'—')}</span>
@@ -389,9 +435,13 @@ function renderDetail(){
       </div>
     </div>
 
+    ${gapLabels(DETAIL.dataGaps).length ? `<div class="gap-banner"><i class="ti ti-alert-triangle"></i> Missing: ${gapLabels(DETAIL.dataGaps).join(', ')}</div>` : ''}
+
     ${execCard}
 
     ${employmentHistoryCard(DETAIL.employmentHistory, DETAIL.employmentHistorySource)}
+
+    ${salaryCard(DETAIL.salaryNotes)}
 
     <details class="accordion">
       <summary><span class="chev">▶</span> Summary <span class="acc-teaser">${(out?.candidateSummaryBullets||[]).length} points</span></summary>
@@ -402,6 +452,8 @@ function renderDetail(){
       <summary><span class="chev">▶</span> Scorecard <span class="acc-teaser">${esc(scorecardTeaser(out?out.scorecard:null))}</span></summary>
       <div class="acc-body">${scorecardBars(out?out.scorecard:null)}</div>
     </details>
+
+    ${hackerEvalCard(DETAIL.stageEvaluations)}
 
     <details class="accordion">
       <summary><span class="chev">▶</span> Green Flags <span class="acc-teaser">${nGreen}</span></summary>
