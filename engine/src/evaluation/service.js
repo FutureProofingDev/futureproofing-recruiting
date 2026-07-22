@@ -72,7 +72,7 @@ export async function determineStageWork(env, candidateId, pipelineKey, dossier,
   for (const stageDef of fieldMatchedStages) {
     const matched = (dossier.feedbackSimplified || []).filter((fb, i) => {
       const titles = new Set((fb.fields || []).map(f => f.title));
-      const isMatch = stageDef.matchFeedbackFields(titles);
+      const isMatch = stageDef.matchFeedbackFields(titles, fb);
       if (isMatch) matchedFeedbackIds.add(dossier.feedback?.[i]?.id);
       return isMatch;
     });

@@ -71,9 +71,16 @@ export const aiEngineerPipeline = {
       includeManualTranscript: true,
       // Gabe Murillo's behavioral/culture-fit scorecard — matched by field
       // composition since Ashby doesn't expose a usable stage title here.
-      matchFeedbackFields(fieldTitles) {
+      // Some job families' Ashby form doesn't carry these specific
+      // statements (e.g. "Applied AI/ML Engineer" reqs use a bare
+      // Overall Recommendation + free-text Feedback form) — Gabe always
+      // runs the behavioral/culture-fit interview regardless of which
+      // form Ashby happens to attach to the req, so his submissions count
+      // here even when the field set is generic.
+      matchFeedbackFields(fieldTitles, fb) {
         return fieldTitles.has('The candidate is a structured communicator.') ||
-               fieldTitles.has('The candidate demonstrates high EQ, passion, and self-awareness');
+               fieldTitles.has('The candidate demonstrates high EQ, passion, and self-awareness') ||
+               fb?.evaluatorName === 'Gabe Murillo';
       },
     },
   ],
